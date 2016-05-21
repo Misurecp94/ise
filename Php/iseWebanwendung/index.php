@@ -1,8 +1,8 @@
 <?php
 if(session_status()!=PHP_SESSION_ACTIVE) session_start();
 session_unset();
-// DELETE ME!
-$_SESSION['userID'] = 1;
+// DELETE ME! Just to get to mainPage without register/login
+//$_SESSION['userID'] = 1;
 // If no session is started --> start it
 include "controller/utility.php";
 //if userID in session is set
