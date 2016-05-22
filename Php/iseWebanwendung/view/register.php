@@ -11,7 +11,7 @@ if(isset($_GET['inputEmail'])){
         $_SESSION['userID'] = $userID;
         header("Location:main.php");
     } else {
-        header("Location:register.php");
+        header("Location:register.php?error=\"\"");
     }
 }
 ?>
@@ -40,11 +40,6 @@ if(isset($_GET['inputEmail'])){
             <h3 align="center">Bitte geben Sie Ihre Email und ihr Passwort ein!</h3>
             <br/>
             <br/>
-            <?php
-            if(isset($_GET['error'])){
-                echo "<h1>Fehlerhafte Eingabe! Bitte erneut versuchen.>";
-            }
-            ?>
             <form class="form-horizontal" method="get" action="">
                 <div class="form-group">
                     <label for="inputEmail" class="col-sm-2 control-label">Email</label>
@@ -66,6 +61,16 @@ if(isset($_GET['inputEmail'])){
                     </div>
                 </div>
             </form>
+            <br/>
+            <?php
+            if(isset($_GET['error'])){
+                echo "
+                    <div class=\"alert alert-danger\">
+                        <strong>Achtung!</strong> Fehlerhafte Eingabe. Bitte versuchen Sie es erneut!
+                    </div>
+                ";
+            }
+            ?>
         </div>
     </div>
     <div class="col col-md-4">
