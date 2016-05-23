@@ -35,12 +35,12 @@ if(!utility::isLoggedIn()){ //if userID in session is NOT set
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li><a href="#">Mein Profil</a></li>
+                <li><a href="main.php">Mein Profil</a></li>
             </ul>
             <ul class="nav navbar-nav">
                 <li><a href="freunde.php">Freunde</a></li>
             </ul>
-            <form class="navbar-form navbar-left" method="post" action="nutzerSuche.php">
+            <form class="navbar-form navbar-left" method="get" action="nutzerSuche.php">
                 <div class="form-group">
                     <input type="text" class="form-control" placeholder="Name eingeben">
                 </div>
@@ -64,7 +64,7 @@ if(!utility::isLoggedIn()){ //if userID in session is NOT set
 <!-- Navbar end -->
 <!-- Body of the Page -->
 
-
+<!-- Gruppen anzeigen, Beiträge verfassen -->
 
 
 

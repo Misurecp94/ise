@@ -17,6 +17,15 @@ class utility
             session_destroy();
         }
     }
+
+    public static function checkIfPasswordsAreTheSame($newPW1, $newPW2)
+    {
+        if($newPW1 == $newPW2){
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
 
 /*

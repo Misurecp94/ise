@@ -11,10 +11,43 @@ $persInfo = databaseController::getPersInfo($_SESSION["userID"]);
 $interests = databaseController::getInteresse($_SESSION["userID"]);
 $pic = databaseController::getPic($_SESSION["userID"]);
 
-if(true){
-    // nothing ;(
+if(isset($_GET["submitPersInfo"])){
+    databaseController::changePersInfo($_SESSION["userID"], $_GET["nName"], $_GET["vName"], $_GET["age"], $_GET["groesse"], $_GET["gender"], $_GET["work"]);
+    header("Location: main.php");
+    exit();
+} else if(isset($_GET["submitPasswordChange"])){
+    if(utility::checkIfPasswordsAreTheSame($_GET["newPW1"], $_GET["newPW2"]) == true){
+        if(databaseController::changePassword($_SESSION["userID"], $_GET["newPW1"])==true){
+            header("Location: main.php");
+            exit();
+        } else {
+            header("Location: main.php?error=password");
+            exit();
+        }
+    } else {
+        header("Location: main.php?error=password");
+        exit();
+    }
+// ToDO: DEBUG PICUPLOAD PLEASE!  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+} else if(isset($_POST["submitPic"])){
+    if(isset($_FILES["pic"])){
+        if(databaseController::changePic($_SESSION["userID"], $_FILES["pic"]) == true){
+            header("Location: main.php");
+            exit();
+        } else {
+            header("Location: main.php?error=pic");
+            exit();
+        }
+    }
+} else if(isset($_GET["submitKontaktdaten"])){
+    databaseController::changeKontaktdaten($_SESSION["userID"], $_GET["email"],$_GET["land"], $_GET["ort"], $_GET["plz"], $_GET["telNr"]);
+    header("Location: main.php");
+    exit();
+} else if(isset($_GET["submitInteresse"])){
+    databaseController::changeInteresse($_SESSION["userID"], $_GET["interests"]);
+    header("Location: main.php");
+    exit();
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -45,12 +78,12 @@ if(true){
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li  class="active"><a href="#">Mein Profil</a></li>
+                <li  class="active"><a href="main.php">Mein Profil</a></li>
             </ul>
             <ul class="nav navbar-nav">
                 <li><a href="freunde.php">Freunde</a></li>
             </ul>
-            <form class="navbar-form navbar-left" method="post" action="nutzerSuche.php">
+            <form class="navbar-form navbar-left" method="get" action="nutzerSuche.php">
                 <div class="form-group">
                     <input type="text" class="form-control" placeholder="Name eingeben">
                 </div>
@@ -79,68 +112,47 @@ if(true){
             <div class="col-md-1">
                 <!-- nothing -->
             </div>
-            <div class="col-md-8">
-                <div class="row">
-                    <div class="col-md-12">
-                        <h1>Persönliche Informationen</h1>
+                <div class="col-md-8">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h1>Persönliche Informationen</h1>
+                        </div>
                     </div>
-                </div>
-                <br/>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="nName">Nachname</label>
-                            <input style="text-align:right;"  type="text" class="form-control" id="nName" placeholder="Nachname" value=<?php echo $persInfo["nName"]; ?>>
+                    <br/>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <form class="form-horizontal" action="" method="get">
+                                <div class="form-group">
+                                    <label for="nName">Nachname</label>
+                                    <input style="text-align:right;"  type="text" class="form-control" id="nName" name="nName" placeholder="Nachname" value=<?php echo $persInfo["nName"]; ?>>
+                                </div>
+                                <div class="form-group">
+                                    <label for="vName">Vorname</label>
+                                    <input style="text-align:right;"  type="text" class="form-control" id="vName" name="vName" placeholder="Vorname" value=<?php echo $persInfo["vName"]; ?>>
+                                </div>
+                                <div class="form-group">
+                                    <label for="age">Alter</label>
+                                    <input style="text-align:right;"  type="text" class="form-control" id="age" name="id" placeholder="Alter" value=<?php echo $persInfo["age"]; ?>>
+                                </div>
+                                <div class="form-group">
+                                    <label for="groesse">Größe</label>
+                                    <input style="text-align:right;"  type="text" class="form-control" id="groesse" name="groesse" placeholder="Groesse" value=<?php echo $persInfo["groesse"]; ?>>
+                                </div>
+                                <div class="form-group">
+                                    <label for="gender">Geschlecht</label>
+                                    <input style="text-align:right;" type="text" class="form-control" id="gender" name="gender" placeholder="Geschlecht" value=<?php echo $persInfo["gender"]; ?>>
+                                </div>
+                                <div class="form-group">
+                                    <label for="work">Arbeit</label>
+                                    <input style="text-align:right;"  type="text" class="form-control" id="work" name="work" placeholder="Arbeit" value=<?php echo $persInfo["work"]; ?>>
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-default" type="submit" name="submitPersInfo" id="submitPersInfo">Speichern</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="vName">Vorname</label>
-                            <input style="text-align:right;"  type="text" class="form-control" id="vName" placeholder="Vorname" value=<?php echo $persInfo["vName"]; ?>>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="age">Alter</label>
-                            <input style="text-align:right;"  type="text" class="form-control" id="age" placeholder="Alter" value=<?php echo $persInfo["age"]; ?>>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="groesse">Größe</label>
-                            <input style="text-align:right;"  type="text" class="form-control" id="groesse" placeholder="Groesse" value=<?php echo $persInfo["groesse"]; ?>>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="gender">Geschlecht</label>
-                            <input style="text-align:right;" type="text" class="form-control" id="gender" placeholder="Geschlecht" value=<?php echo $persInfo["gender"]; ?>>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="work">Arbeit</label>
-                            <input style="text-align:right;"  type="text" class="form-control" id="work" placeholder="Arbeit" value=<?php echo $persInfo["work"]; ?>>
-                        </div>
-                    </div>
-                </div>
-                <br/>
-                <div class="row">
-                    <div class="col-md-12">
-                        <button class="btn btn-default" type="submit" name="submitPersInfo" id="submitPersInfo">Speichern</button>
-                    </div>
-                </div>
-            </div>
             <div class="col-md-1">
                 <!-- nothing -->
             </div>
@@ -159,32 +171,23 @@ if(true){
                 <br/>
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="oldPW">Altes Passwort:</label>
-                            <input style="text-align:right;" type="password" class="form-control" id="oldPW" placeholder="Altes Passwort">
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="newPW1">Neues Passwort:</label>
-                            <input style="text-align:right;" type="password" class="form-control" id="newPW1" placeholder="Neues Passwort">
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="newPW2">Neues Passwort nochmal:</label>
-                            <input style="text-align:right;" type="password" class="form-control" id="newPW2" placeholder="Neues Passwort nochmal">
-                        </div>
-                    </div>
-                </div>
-                <br/>
-                <div class="row">
-                    <div class="col-md-12">
-                        <button class="btn btn-default" type="submit" name="submitPasswordChange" id="submitPasswordChange">Passwort ändern</button>
+                        <form action="" method="get">
+                            <div class="form-group">
+                                <label for="oldPW">Altes Passwort:</label>
+                                <input style="text-align:right;" type="password" class="form-control" id="oldPW" name="oldPW" placeholder="Altes Passwort"  required="required">
+                            </div>
+                            <div class="form-group">
+                                <label for="newPW1">Neues Passwort:</label>
+                                <input style="text-align:right;" type="password" class="form-control" id="newPW1" name="newPW1" placeholder="Neues Passwort"  required="required">
+                            </div>
+                            <div class="form-group">
+                                <label for="newPW2">Neues Passwort nochmal:</label>
+                                <input style="text-align:right;" type="password" class="form-control" id="newPW2" name="newPW2" placeholder="Neues Passwort nochmal"  required="required">
+                            </div>
+                            <div class="col-md-12">
+                                <button class="btn btn-default" type="submit" name="submitPasswordChange" id="submitPasswordChange">Passwort ändern</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
                 <?php
@@ -225,18 +228,17 @@ if(true){
                 <br/>
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="pic">Neues Bild hochladen</label>
-                            <input type="file" id="pic">
-                        </div>
+                        <form action="" method="post" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="pic">Neues Bild hochladen</label>
+                                <input type="file" id="pic" name="pic">
+                            </div>
+                            <br/>
+                            <button type="submit" class="btn btn-default" id="submitPic" name="submitPic">Hochladen</button>
+                        </form>
                     </div>
                 </div>
                 <br/>
-                <div class="row">
-                    <div class="col-md-12">
-                        <button type="submit" class="btn btn-default" id="submitPic" name="submitPic">Hochladen</button>
-                    </div>
-                </div>
                 <?php
                 if(isset($_GET["error"]) && $_GET["error"] == "pic"){
                     echo "
@@ -267,48 +269,31 @@ if(true){
                 <br/>
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="email">E-Mail</label>
-                            <input style="text-align:right;"  type="email" class="form-control" id="email" placeholder="E-Mail" value=<?php echo $persInfo["email"]; ?>>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="land">Land</label>
-                            <input style="text-align:right;"  type="text" class="form-control" id="land" placeholder="Land" value=<?php echo $persInfo["land"]; ?>>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="ort">Ort</label>
-                            <input style="text-align:right;"  type="text" class="form-control" id="ort" placeholder="Ort" value=<?php echo $persInfo["ort"]; ?>>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="plz">Postleitzahl</label>
-                            <input style="text-align:right;"  type="text" class="form-control" id="plz" placeholder="Postleitzahl" value=<?php echo $persInfo["plz"]; ?>>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="telNr">Telefonnummer</label>
-                            <input style="text-align:right;"  type="text" class="form-control" id="telNr" placeholder="Telefonnummer" value=<?php echo $persInfo["telNr"]; ?>>
-                        </div>
-                    </div>
-                </div>
-                <br/>
-                <div class="row">
-                    <div class="col-md-12">
-                        <button class="btn btn-default" name="submitKontaktdaten" id="submitKontaktdaten">Speichern</button>
+                        <form action="" method="get">
+                            <div class="form-group">
+                                <label for="email">E-Mail</label>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="E-Mail" value=<?php echo $kontakts["email"]; ?>>
+                            </div>
+                            <div class="form-group">
+                                <label for="land">Land</label>
+                                <input type="text" class="form-control" id="land" name="land" placeholder="Land" value=<?php echo $kontakts["land"]; ?>>
+                            </div>
+                            <div class="form-group">
+                                <label for="ort">Ort</label>
+                                <input type="text" class="form-control" id="ort" name="ort" placeholder="Ort" value=<?php echo $kontakts["ort"]; ?>>
+                            </div>
+                            <div class="form-group">
+                                <label for="plz">Postleitzahl</label>
+                                <input type="text" class="form-control" id="plz" name="plz" placeholder="Postleitzahl" value=<?php echo $kontakts["plz"]; ?>>
+                            </div>
+                            <div class="form-group">
+                                <label for="telNr">Telefonnummer</label>
+                                <input type="text" class="form-control" id="telNr" name="telNr" placeholder="Telefonnummer" value=<?php echo $kontakts["telNr"]; ?>>
+                            </div>
+                            <div class="col-md-12">
+                                <button class="btn btn-default" name="submitKontaktdaten" id="submitKontaktdaten">Speichern</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -330,15 +315,14 @@ if(true){
                 <br/>
                 <div class="row">
                     <div class="col-md-12">
-                        <textarea class="form-control" rows="5" placeholder="Interessen" name="interests" id="interests" style="resize: none;"><?php echo $interests; ?></textarea>
+                        <form action="" method="get">
+                            <textarea class="form-control" rows="5" placeholder="Interessen" name="interests" id="interests" style="resize: none;"><?php echo $interests; ?></textarea>
+                            <br/>
+                            <button class="btn btn-default" name="submitInteresse" id="submitInteresse">Speichern</button>
+                        </form>
                     </div>
                 </div>
                 <br/>
-                <div class="row">
-                    <div class="col-md-12">
-                        <button class="btn btn-default" name="submitInteresse" id="submitInteresse">Speichern</button>
-                    </div>
-                </div>
             </div>
             <div class="col-md-1">
                 <!-- nothing -->
