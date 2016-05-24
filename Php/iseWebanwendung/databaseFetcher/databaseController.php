@@ -84,6 +84,30 @@ class databaseController
         // ToDo: change PersInfo in Database
     }
 
+    public static function getPersons($userID, $input)
+    {
+        // ToDo: Search for everyone with name or vorname (or both) like $input, store all people in an array (pic, Vorname, Nachname, userID, Boolean friendsWithUser .. per User) and return it.
+        // Nothing found? return null
+        return [[
+            "pic" => "../pic/error.jpg",
+            "vName" => "Tim",
+            "nName" => "Muster",
+            "userID" => 1,
+            "isFriend" => true
+        ],[
+            "pic" => "../pic/error.jpg",
+            "vName" => "Lisa",
+            "nName" => "Musterfrau",
+            "userID" => 2,
+            "isFriend" => false
+        ]];
+    }
+
+    public static function addFriend($userID, $friendAdd)
+    {
+        // ToDo freund mit ID $friendAdd und user mit id $userID befreunden!
+    }
+
 
 }
 ?>

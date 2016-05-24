@@ -5,6 +5,11 @@ if(!utility::isLoggedIn()){ //if userID in session is NOT set
     header("Location: ../index.php");
     exit();
 }
+include "../databaseFetcher/databaseController.php";
+if(isset($_GET["friendAdd"])){
+    // freund hinzufügen mit databaseController!!
+    databaseController::addFriend($_SESSION["userID"], $_GET["friendAdd"]);
+}
 ?>
 
 <!DOCTYPE html>
@@ -42,7 +47,7 @@ if(!utility::isLoggedIn()){ //if userID in session is NOT set
             </ul>
             <form class="navbar-form navbar-left" method="get" action="nutzerSuche.php">
                 <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Name eingeben">
+                    <input type="text" class="form-control" name="input" placeholder="Name eingeben">
                 </div>
                 <button type="submit" class="btn btn-default">Nutzer suchen</button>
             </form>

@@ -5,6 +5,11 @@ if(!utility::isLoggedIn()){ //if userID in session is NOT set
     header("Location: ../index.php");
     exit();
 }
+include "../databaseFetcher/databaseController.php";
+$data = null;
+if(isset($_GET["input"])){
+    $data = databaseController::getPersons($_SESSION["userID"], $_GET["input"]);
+}
 ?>
 
 <!DOCTYPE html>
@@ -42,7 +47,7 @@ if(!utility::isLoggedIn()){ //if userID in session is NOT set
             </ul>
             <form class="navbar-form navbar-left" method="get" action="nutzerSuche.php">
                 <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Name eingeben">
+                    <input type="text" class="form-control" name="input" placeholder="Name eingeben">
                 </div>
                 <button type="submit" class="btn btn-default">Nutzer suchen</button>
             </form>
@@ -65,13 +70,51 @@ if(!utility::isLoggedIn()){ //if userID in session is NOT set
 <!-- Body of the Page -->
 
 <!-- gefundene Nutzer anzeigen, Möglichkeit bieten freundschaften hinzuzufügen --> 
+<br/>
+<br/>
+<div class="row">
+    <div class="col-md-3">
 
+    </div>
+    <div class="col-md-6">
+        <div class="row">
+            <div class="col-md-12">
+                <?php
+                if($data == null){
+                    echo "<h1 align=\"center\">Kein Benutzer gefunden! Bitte versuchen sie es erneut.";
+                } else {
+                    // gib alles aus ... inkl button freundeadd wenn boolean istfreund = true;
+                    $size = sizeof($data);
+                    for($i=0; $i<$size; $i++){
+                        echo "<div class=\"well\">";
+                            echo "<div class=\"row\">";
+                                echo "<div class=\"col-md-4\">";
+                                    echo "<img src=\"" . $data[$i]["pic"] . "\" class=\"img-responsive img-rounded\" style=\"max-width:30%\" />";
+                                echo "</div>";
+                                echo "<div class=\"col-md-4\">";
+                                    echo "<h1>" . $data[$i]["vName"] . "  " . $data[$i]["nName"];
+                                echo "</div>";
+                                echo "<div class=\"col-md-4\" align=\"right\">";
+                                    if($data[$i]["isFriend"]==false){
+                                        echo "<form action=\"freunde.php\" method=\"get\">";
+                                            echo "<button class=\"btn btn-default\" name=\"friendAdd\" . value = \"". $data[$i]["userID"] . "\">Freund hinzufügen</button>";
+                                        echo "</form>";
+                                    } else {
+                                        echo "<span class=\"glyphicon glyphicon-ok\" aria-hidden=\"true\"></span>";
+                                    }
+                                echo "</div>";
+                            echo "</div>";
+                        echo "</div>";
+                    }
+                }
+                ?>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
 
-
-
-
-
-
+    </div>
+</div>
 
 <!-- End Body of the Page -->
 
