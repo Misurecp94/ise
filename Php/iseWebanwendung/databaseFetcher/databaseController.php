@@ -108,6 +108,26 @@ class databaseController
         // ToDo freund mit ID $friendAdd und user mit id $userID befreunden!
     }
 
+    public static function getFriends($userID)
+    {
+        // ToDO: get all Friends of user w/ $userID and return it. No friends => return null;
+        // ToDO: return pic, vorname, nachname, userID und Unterhaltung vorhanden boolean (true false)
+
+        return [[
+            "pic" => "../pic/error.jpg",
+            "vName" => "Tim",
+            "nName" => "Muster",
+            "userID" => 1,
+            "unterhaltung" => true
+            ],[
+           "pic" => "../pic/error.jpg",
+            "vName" => "Tom",
+            "nName" => "Turbo",
+            "userID" => 3,
+            "unterhaltung" => false
+        ]];
+    }
+
 
 }
 ?>
