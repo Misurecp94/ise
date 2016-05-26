@@ -131,7 +131,7 @@ if(isset($_GET["submitPersInfo"])){
                                 </div>
                                 <div class="form-group">
                                     <label for="age">Alter</label>
-                                    <input style="text-align:right;"  type="text" class="form-control" id="age" name="id" placeholder="Alter" value=<?php echo $persInfo["age"]; ?>>
+                                    <input style="text-align:right;"  type="text" class="form-control" id="age" name="age" placeholder="Alter" value=<?php echo $persInfo["age"]; ?>>
                                 </div>
                                 <div class="form-group">
                                     <label for="groesse">Größe</label>

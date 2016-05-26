@@ -2,18 +2,24 @@
 
 class databaseController
 {
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $conn = null;
-    
+            
+    public $con = null;
+
     
     public function createDatabaseConnection(){
-        $conn = mysqli_connect($servername, $username, $password);
+       
+            $servername = 'localhost';
+            $username = 'root';
+            $password = '';
+            $dbname= 'kis';
+        global $con;
+        $con = mysqli_connect($servername, $username, $password, $dbname);
+
     }
 
     public function closeDatabaseConnection(){
-        mysqli_close($conn);
+        global $con;
+        mysqli_close($con);
     }
 
     public static function changePic($userID, $pic){
@@ -28,66 +34,177 @@ class databaseController
     }
 
     public static function getInteresse($userID){
-        // Todo Bild zurückgeben. Kein Interesse -> "" zurückgeben
+       
+        global $con;
+        databaseController::createDatabaseConnection();
+        
+        $sql = "SELECT Interesse FROM benutzer,profil WHERE benutzer.Benutzer_ID ='$userID' AND ".
+            "Profil.Benutzer_ID='$userID'";
+       
+        $db_erg = mysqli_query( $con, $sql );
+        $row = mysqli_fetch_row($db_erg);
+        mysqli_free_result($db_erg); 
 
-        return "Schwimmen, laufen usw";
+        databaseController::closeDatabaseConnection();
+
+        return $row[0];
+
     }
 
     public static function getPersInfo($userID){
-        //ToDo get all Info and return it. Leere Felder mit ""
+        
         //Nachname, Vorname, Alter, Groesse, Geschlecht, Beruf
+        
+        global $con;
+        databaseController::createDatabaseConnection();
+        
+        $sql = "SELECT Nachname,Vorname,Geburtstag,Groesse,Geschlecht,Beruf FROM profil,persoenlicheinformation  WHERE profil.Benutzer_ID='$userID' AND persoenlicheinformation.Profil_ID=profil.Profil_ID" ;
+       
+        $db_erg = mysqli_query( $con, $sql );
+        $row = mysqli_fetch_row($db_erg);
+        mysqli_free_result($db_erg); 
 
-        return ["nName"=>"Mustermann" , "vName"=>"Max" , "age"=>"18", "groesse"=>"180", "gender"=>"Male", "work"=>"Student"];
+        databaseController::closeDatabaseConnection();
+        /* Wenn Alter ausgegeben werden soll
+        $from = new DateTime($row[2]);
+        $to   = new DateTime('today');
+        echo $from->diff($to)->y;
+        */
+       
+        return ["nName" =>$row[0],
+                "vName"=>$row[1],
+                "age"=> $row[2],
+                "groesse"=>$row[3],
+                "gender"=>$row[4],
+                "work"=>$row[5]];
+
     }
 
     public static function getKontaktdaten($userID){
-        // ToDo get all Info, and return it. Alle leeren Felder mit "" zurückgeben
+
         // Email, Land, Stadt, PLZ, TelNr
 
-        return ["email" =>"email@test.com",
-                "land"=>"Austria",
-                "ort"=>"Vienna",
-                "plz"=> "1030",
-                "telNr"=>"06500005550"];
-    }
-
-    public static function addUserToDatabase($email, $password) {
+        global $con;
         databaseController::createDatabaseConnection();
-        /**
-         * ToDO: try to Register a new User with email and password. Wenns klappt --> return userID aus der Datenbank, sonst return "null"
-         */
+        
+        $sql = "SELECT Email,Land,Ort,PLZ,TelNr FROM benutzer,profil,kontaktdaten WHERE ". "benutzer.Benutzer_ID='$userID' AND benutzer.Profil_ID=profil.Profil_ID AND ". "Profil.Kontaktdaten_ID = kontaktdaten.Kontaktdaten_ID";
+       
+        $db_erg = mysqli_query( $con, $sql );
+        $row = mysqli_fetch_row($db_erg);
+        mysqli_free_result($db_erg); 
+
         databaseController::closeDatabaseConnection();
-        return 1;
+       
+        
+        return ["email" =>$row[0],
+                "land"=>$row[1],
+                "ort"=>$row[2],
+                "plz"=>$row[3],
+                "telNr"=>$row[4]];
+        
     }
 
     public static function loginUser($email, $password){
+        
         databaseController::createDatabaseConnection();
-        /**
-         * ToDo: try to Login a User with email and password. Wenns klappt --> return userID aus der Datenbank, sonst return "null";
-         */
+        
+        $sql = "SELECT benutzer.Benutzer_ID FROM benutzer,profil,kontaktdaten WHERE ". "benutzer.passwort='$password' AND benutzer.Profil_ID=profil.Profil_ID AND ". "Profil.Kontaktdaten_ID = kontaktdaten.Kontaktdaten_ID AND kontaktdaten.Email='$email'";
+        global $con;
+        $db_erg = mysqli_query( $con, $sql );
+
+        $row = mysqli_fetch_row($db_erg);
+        mysqli_free_result($db_erg); 
+
         databaseController::closeDatabaseConnection();
-        return 1;
+        return $row[0];
     }
 
     public static function changeInteresse($userID, $interests)
     {
-        // ToDo: change interests in database;
+        databaseController::createDatabaseConnection();
+
+        $sql = "UPDATE profil SET profil.Interesse='$interests' WHERE profil.Benutzer_ID='$userID'";
+        global $con;
+        $db_erg = mysqli_query( $con, $sql );
+
+        databaseController::closeDatabaseConnection();
+        
+        if (!$db_erg) {
+            return false;;
+        } else {
+            return true;
+        }
+        
     }
 
     public static function changeKontaktdaten($userID, $email, $land, $ort, $plz, $telNr)
     {
-        // ToDo: change koontaktdaten in database;
+        databaseController::createDatabaseConnection();
+
+        $sql = "UPDATE kontaktdaten SET ".
+            "kontaktdaten.Email='$email', ". 
+            "kontaktdaten.Land='$land', ".
+            "kontaktdaten.Ort='$ort', ".
+            "kontaktdaten.PLZ='$plz', ".
+            "kontaktdaten.TelNr='$telNr' ".
+            "WHERE kontaktdaten.Profil_ID='$userID'";
+        
+        global $con;
+        $db_erg = mysqli_query( $con, $sql );
+
+        databaseController::closeDatabaseConnection();
+        
+        if (!$db_erg) {
+            printf("Errormessage: %s\n", mysqli_error($link));
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public static function changePassword($userID, $newPW1)
     {
-        // ToDo: change password in database. on success return true, else return false
-        return true;
+               databaseController::createDatabaseConnection();
+
+        $sql = "UPDATE benutzer SET ".
+            "benutzer.Passwort='$newPW1' ". 
+            "WHERE benutzer.benutzer_ID='$userID'";
+        
+        global $con;
+        $db_erg = mysqli_query( $con, $sql );
+
+        databaseController::closeDatabaseConnection();
+        
+        if (!$db_erg) {
+            return false;;
+        } else {
+            return true;
+        }
     }
 
     public static function changePersInfo($userID, $nName, $vName, $age, $groesse, $gender, $work)
     {
-        // ToDo: change PersInfo in Database
+        databaseController::createDatabaseConnection();
+
+        $sql = "UPDATE persoenlicheinformation SET ".
+            "persoenlicheinformation.Vorname='$vName',". 
+            "persoenlicheinformation.Nachname='$nName', ".
+            "persoenlicheinformation.Geburtstag='$age', ".
+            "persoenlicheinformation.Groesse='$groesse', ".
+            "persoenlicheinformation.Beruf='$work', ".
+            "persoenlicheinformation.Geschlecht='$gender' ".
+            "WHERE persoenlicheinformation.Profil_ID='$userID'";
+        
+        global $con;
+        $db_erg = mysqli_query( $con, $sql );
+
+        databaseController::closeDatabaseConnection();
+        
+        if (!$db_erg) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public static function getPersons($userID, $input)

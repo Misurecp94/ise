@@ -8,9 +8,11 @@ if(utility::isLoggedIn()){ //if userID in session is set
 if(isset($_GET['inputEmail'])){
     include"../databaseFetcher/databaseController.php";
     if(($userID = databaseController::loginUser($_GET['inputEmail'], $_GET['inputPassword']))!=null){
+      
         $_SESSION['userID'] = $userID;
         header("Location:main.php");
     } else {
+       
         header("Location:login.php?error=\"\"");
     }
 }
