@@ -2,12 +2,18 @@
 
 class databaseController
 {
+    $servername = "localhost";
+    $username = "root";
+    $password = "";
+    $conn = null;
+    
+    
     public function createDatabaseConnection(){
-        // ToDo: create Database Connection
+        $conn = mysqli_connect($servername, $username, $password);
     }
 
     public function closeDatabaseConnection(){
-        // ToDo: close DatabaseConnection
+        mysqli_close($conn);
     }
 
     public static function changePic($userID, $pic){
