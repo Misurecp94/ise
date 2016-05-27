@@ -21,6 +21,67 @@ class databaseController
         global $con;
         mysqli_close($con);
     }
+    
+    public static function createGroup($userID, $GTitel, $GThema){
+        global $con;
+        
+        databaseController::createDatabaseConnection();
+        
+        mysqli_autocommit($con,false);
+        $sql = "INSERT INTO gruppe (G_Titel,G_Thema,Ersteller_ID) VALUES ".       
+        "('$GTitel','$GThema','$userID')";
+        
+         if(mysqli_query( $con, $sql )){
+             // insert in ist mitglied mit letzter id von gruppe
+            $last_id = mysqli_insert_id($con);
+             
+            $sql = "INSERT INTO istmitglied (Benutzer_ID,Gruppen_ID) VALUES ('$userID','$last_id')";
+             if(mysqli_query( $con, $sql )){
+                 mysqli_commit($con);
+                 databaseController::closeDatabaseConnection();
+                 return true;
+             }else{
+                 mysqli_rollback($con);
+                 databaseController::closeDatabaseConnection();
+                 return false;
+             }
+         }else{
+            mysqli_rollback($con);
+             databaseController::closeDatabaseConnection();
+             return false;
+         }       
+    }
+    
+    public static function getBeitraege($userID,$Gruppe){
+        
+       global $con;
+        databaseController::createDatabaseConnection();
+        
+        $sql = "SELECT gruppe.G_Titel,gruppe.G_Thema FROM gruppe,istmitglied WHERE istmitglied.Benutzer_ID='$userID' AND istmitglied.Gruppen_ID=gruppe.Gruppen_ID";
+        $db_erg = mysqli_query( $con, $sql );
+        
+        while($row = mysqli_fetch_assoc($db_erg)){
+            $result[] = $row;
+        }
+        return $result;
+    }
+    
+    
+    
+    public static function getGroupList($userID){
+        
+        global $con;
+        databaseController::createDatabaseConnection();
+        
+        $sql = "SELECT gruppe.G_Titel,gruppe.G_Thema FROM gruppe,istmitglied WHERE istmitglied.Benutzer_ID='$userID' AND istmitglied.Gruppen_ID=gruppe.Gruppen_ID";
+        $db_erg = mysqli_query( $con, $sql );
+        
+        while($row = mysqli_fetch_assoc($db_erg)){
+            $result[] = $row;
+        }
+        return $result;
+    }
+    
 
     public static function changePic($userID, $pic){
         // ToDo: change pic, if success return true, else return false
@@ -53,12 +114,13 @@ class databaseController
 
     public static function getPersInfo($userID){
         
+        
         //Nachname, Vorname, Alter, Groesse, Geschlecht, Beruf
         
         global $con;
         databaseController::createDatabaseConnection();
         
-        $sql = "SELECT Nachname,Vorname,Geburtstag,Groesse,Geschlecht,Beruf FROM profil,persoenlicheinformation  WHERE profil.Benutzer_ID='$userID' AND persoenlicheinformation.Profil_ID=profil.Profil_ID" ;
+        $sql = "SELECT Nachname,Vorname,Geburtstag,Groesse,Geschlecht,Beruf FROM profil,persoenlicheinformation  WHERE profil.Benutzer_ID='$userID'";
        
         $db_erg = mysqli_query( $con, $sql );
         $row = mysqli_fetch_row($db_erg);
@@ -81,13 +143,14 @@ class databaseController
     }
 
     public static function getKontaktdaten($userID){
+        
 
         // Email, Land, Stadt, PLZ, TelNr
 
         global $con;
         databaseController::createDatabaseConnection();
         
-        $sql = "SELECT Email,Land,Ort,PLZ,TelNr FROM benutzer,profil,kontaktdaten WHERE ". "benutzer.Benutzer_ID='$userID' AND benutzer.Profil_ID=profil.Profil_ID AND ". "Profil.Kontaktdaten_ID = kontaktdaten.Kontaktdaten_ID";
+        $sql = "SELECT Email,Land,Ort,PLZ,TelNr FROM benutzer,profil,kontaktdaten WHERE ". "kontaktdaten.Benutzer_ID='$userID'";
        
         $db_erg = mysqli_query( $con, $sql );
         $row = mysqli_fetch_row($db_erg);
@@ -106,9 +169,11 @@ class databaseController
 
     public static function loginUser($email, $password){
         
+        
         databaseController::createDatabaseConnection();
         
-        $sql = "SELECT benutzer.Benutzer_ID FROM benutzer,profil,kontaktdaten WHERE ". "benutzer.passwort='$password' AND benutzer.Profil_ID=profil.Profil_ID AND ". "Profil.Kontaktdaten_ID = kontaktdaten.Kontaktdaten_ID AND kontaktdaten.Email='$email'";
+        $sql = "SELECT benutzer.Benutzer_ID FROM benutzer,kontaktdaten WHERE ". "benutzer.passwort='$password' AND benutzer.Benutzer_ID=kontaktdaten.Kontaktdaten_ID AND ". 
+        "kontaktdaten.Email='$email'";
         global $con;
         $db_erg = mysqli_query( $con, $sql );
 
@@ -147,7 +212,7 @@ class databaseController
             "kontaktdaten.Ort='$ort', ".
             "kontaktdaten.PLZ='$plz', ".
             "kontaktdaten.TelNr='$telNr' ".
-            "WHERE kontaktdaten.Profil_ID='$userID'";
+            "WHERE kontaktdaten.Benutzer_ID='$userID'";
         
         global $con;
         $db_erg = mysqli_query( $con, $sql );
@@ -193,7 +258,7 @@ class databaseController
             "persoenlicheinformation.Groesse='$groesse', ".
             "persoenlicheinformation.Beruf='$work', ".
             "persoenlicheinformation.Geschlecht='$gender' ".
-            "WHERE persoenlicheinformation.Profil_ID='$userID'";
+            "WHERE persoenlicheinformation.Benutzer_ID='$userID'";
         
         global $con;
         $db_erg = mysqli_query( $con, $sql );
@@ -205,50 +270,6 @@ class databaseController
         } else {
             return true;
         }
-    }
-
-    public static function getPersons($userID, $input)
-    {
-        // ToDo: Search for everyone with name or vorname (or both) like $input, store all people in an array (pic, Vorname, Nachname, userID, Boolean friendsWithUser .. per User) and return it.
-        // Nothing found? return null
-        return [[
-            "pic" => "../pic/error.jpg",
-            "vName" => "Tim",
-            "nName" => "Muster",
-            "userID" => 1,
-            "isFriend" => true
-        ],[
-            "pic" => "../pic/error.jpg",
-            "vName" => "Lisa",
-            "nName" => "Musterfrau",
-            "userID" => 2,
-            "isFriend" => false
-        ]];
-    }
-
-    public static function addFriend($userID, $friendAdd)
-    {
-        // ToDo freund mit ID $friendAdd und user mit id $userID befreunden!
-    }
-
-    public static function getFriends($userID)
-    {
-        // ToDO: get all Friends of user w/ $userID and return it. No friends => return null;
-        // ToDO: return pic, vorname, nachname, userID und Unterhaltung vorhanden boolean (true false)
-
-        return [[
-            "pic" => "../pic/error.jpg",
-            "vName" => "Tim",
-            "nName" => "Muster",
-            "userID" => 1,
-            "unterhaltung" => true
-            ],[
-           "pic" => "../pic/error.jpg",
-            "vName" => "Tom",
-            "nName" => "Turbo",
-            "userID" => 3,
-            "unterhaltung" => false
-        ]];
     }
 
 

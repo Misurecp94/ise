@@ -28,6 +28,7 @@ if(isset($_GET["submitPersInfo"])){
         header("Location: main.php?error=password");
         exit();
     }
+// ToDO: DEBUG PICUPLOAD PLEASE!  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 } else if(isset($_POST["submitPic"])){
     if(isset($_FILES["pic"])){
         if(databaseController::changePic($_SESSION["userID"], $_FILES["pic"]) == true){
@@ -84,7 +85,7 @@ if(isset($_GET["submitPersInfo"])){
             </ul>
             <form class="navbar-form navbar-left" method="get" action="nutzerSuche.php">
                 <div class="form-group">
-                    <input type="text" class="form-control" name="input" id="input" placeholder="Name eingeben">
+                    <input type="text" class="form-control" placeholder="Name eingeben">
                 </div>
                 <button type="submit" class="btn btn-default">Nutzer suchen</button>
             </form>

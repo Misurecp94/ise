@@ -1,10 +1,30 @@
 <?php
-if(session_status()!=PHP_SESSION_ACTIVE) session_start();
-include "../controller/utility.php";
-if(!utility::isLoggedIn()){ //if userID in session is NOT set
-    header("Location: ../index.php");
-    exit();
-}
+    if(session_status()!=PHP_SESSION_ACTIVE) session_start();
+    include "../controller/utility.php";
+    include "../databaseFetcher/databaseController.php";
+    if(!utility::isLoggedIn()){ //if userID in session is NOT set
+        header("Location: ../index.php");
+        exit();
+    }
+
+    $groups = databaseController::getGroupList($_SESSION["userID"]);
+
+
+    if(isset($_GET["createGroup"])){
+        echo "isworking";
+
+        if(databaseController::createGroup($_SESSION["userID"], $_GET["gTitel"], $_GET["gThema"])){
+            header("Location: gruppen.php");
+        }else{
+             header("Location: gruppen.php?error=fehlerhappened");
+        }
+        header("Location: gruppen.php");
+        exit();
+    }
+
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -40,7 +60,7 @@ if(!utility::isLoggedIn()){ //if userID in session is NOT set
             <ul class="nav navbar-nav">
                 <li><a href="freunde.php">Freunde</a></li>
             </ul>
-            <form class="navbar-form navbar-left" method="get" name="input" action="nutzerSuche.php">
+            <form class="navbar-form navbar-left" method="get" action="nutzerSuche.php">
                 <div class="form-group">
                     <input type="text" class="form-control" placeholder="Name eingeben">
                 </div>
@@ -64,6 +84,69 @@ if(!utility::isLoggedIn()){ //if userID in session is NOT set
 <!-- Navbar end -->
 <!-- Body of the Page -->
 
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4">
+                <label >Gruppen erstellen</label>
+                 <br><br>
+                            <form  action="" method="get">
+                                <div class="form-group">
+                                    <label for="gTitel">Gruppen Titel</label>
+                                    <input style="text-align:right;"  type="text" class="form-control" id="gTitel" name="gTitel" placeholder="Titel">
+                                </div>
+                                <div class="form-group">
+                                    <label for="gThema">Gruppen Thema</label>
+                                    <input style="text-align:right;"  type="text" class="form-control" id="gThema" name="gThema" placeholder="Thema">
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-default" type="submit" name="createGroup" id="creatGroup">Erstellen</button>
+                                </div>
+                            </form>
+                <hr>
+                <label >Gruppen anzeigen</label>
+                 <br><br>
+                <div class="list-group">
+                    <?php
+                    for($i = 0; $i < count($groups); ++$i) {
+                        echo "<a href=\"#\" class=\"list-group-item\"><h4>".$groups[$i]['G_Titel']."</h4> ".$groups[$i]['G_Thema']."</a>";
+                    }
+                    ?>
+
+                </div>
+                
+            </div>
+            <div class="col-md-8">
+                <div class="row">
+                    Benutzer zu Gruppe hinzufügen
+            	</div>
+                <hr>
+                <div class="row">
+                   Beiträge anzeigen
+            	</div>
+                <hr>
+                <div class="row">
+                   Beitrag hinzufügen
+            	</div>
+                
+            </div>
+
+            
+            
+            
+        </div>
+         
+        
+        
+        
+        
+        
+        
+    
+    
+    </div>
+    
+    
+    
 <!-- Gruppen anzeigen, Beiträge verfassen -->
 
 
