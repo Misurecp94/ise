@@ -79,24 +79,24 @@ if(!utility::isLoggedIn()){ //if userID in session is NOT set
 
 <!-- gefundene Nutzer anzeigen, Möglichkeit bieten freundschaften hinzuzufügen --> 
                   
-<div class="list-group ">
+
     <?php
         if(isset($user) && count($user)>0){
             for($i = 0; $i < count($user); ++$i) {
-               echo "<li class=\"list-group-item\"><h4>".$user[$i]['vorname']." ".$user[$i]['nachname']."</h4>".$user[$i]['email'];
+               echo "<div class=\"list-group \"><li class=\"list-group-item\"><h4>".$user[$i]['vorname']." ".$user[$i]['nachname']."</h4>".$user[$i]['email'];
                 
                 if(databaseController::isFriend($_SESSION["userID"],$user[$i]['nutzerID'])==0){
                     
                     echo "<form  action=\"\" method=\"get\"><button type=\"submit\" class=\"btn btn-default btn-xs pull-right\" name=\"addfriend\" id=\"addfriend\"> Freund hinzuf&uuml;gen</button><input type=\"hidden\" id=\"search\" name=\"search\" class=\"form-control\" value=".$_GET['search']."><input type=\"hidden\" id=\"otherid\" name=\"otherid\" class=\"form-control\" value=".$user[$i]['nutzerID']."></form>";
                 }
-                   echo "</li>";
+                   echo "</li></div>";
             }
                          
         }else{
             echo "Keine User gefunden";
         }
     ?>
-</div>
+
 
 
 
