@@ -128,7 +128,7 @@
                 <div class="list-group">
                     <?php
                     for($i = 0; $i < count($groups); ++$i) {
-                        echo "<a href=\"?group=".$groups[$i]['Gruppen_ID']."\" class=\"list-group-item\"><h4>".$groups[$i]['G_Titel']."</h4> ".$groups[$i]['G_Thema']."</a>";
+                        echo "<a href=\"?group=".$groups[$i]['gruppenID']."\" class=\"list-group-item\"><h4>".$groups[$i]['gTitel']."</h4> ".$groups[$i]['gThema']."</a>";
                     }
                     ?>
 
@@ -154,7 +154,7 @@
                       if(isset($beitraege) && count($beitraege)>0){
                           //echo "<div class=\"row\">";
                             for($i = 0; $i < count($beitraege); $i++) {
-                                echo "<li class=\"list-group-item\"><h4>".$beitraege[$i]['B_Titel']."</h4> ".$beitraege[$i]['B_Inhalt']."</li>";
+                                echo "<li class=\"list-group-item\"><h4>".$beitraege[$i]['bTitel']."</h4> ".$beitraege[$i]['bInhalt']."</li>";
                             }
                           //echo "</div>";
                         }else{

@@ -78,23 +78,13 @@ class databaseController
         databaseController::createDatabaseConnection();
         
         mysqli_autocommit($con,false);
-        $sql = "INSERT INTO beitrag (Ersteller_ID,B_Titel,B_Inhalt) VALUES ".       
-        "('$userID','$BTitel','$BInhalt')";
+        $sql = "INSERT INTO beitrag (nutzerID,BTitel,BInhalt,gruppenID) VALUES ".       
+        "('$userID','$BTitel','$BInhalt','$group')";
         
          if(mysqli_query( $con, $sql )){
-            
-            $last_id = mysqli_insert_id($con);
-             
-            $sql = "INSERT INTO g_beinhaltet_b (Gruppen_ID,Beitrags_ID) VALUES ('$group','$last_id')";
-             if(mysqli_query( $con, $sql )){
-                 mysqli_commit($con);
-                 databaseController::closeDatabaseConnection();
-                 return true;
-             }else{
-                 mysqli_rollback($con);
-                 databaseController::closeDatabaseConnection();
-                 return false;
-             }
+            mysqli_commit($con);
+            databaseController::closeDatabaseConnection();
+            return true;
          }else{
             mysqli_rollback($con);
              databaseController::closeDatabaseConnection();
@@ -107,7 +97,7 @@ class databaseController
        global $con;
         databaseController::createDatabaseConnection();
         
-        $sql = "SELECT gruppe.gTitel,gruppe.gThema FROM gruppe,istmitglied WHERE istmitglied.nutzerID='$userID' AND istmitglied.gruppenID=gruppe.gruppenID";
+        $sql = "SELECT beitrag.bTitel,beitrag.bInhalt FROM beitrag WHERE beitrag.gruppenID='$Gruppe'";
         $db_erg = mysqli_query( $con, $sql );
         $result=[];
         while($row = mysqli_fetch_assoc($db_erg)){
@@ -121,7 +111,7 @@ class databaseController
         global $con;
         databaseController::createDatabaseConnection();
         
-        $sql = "SELECT gruppe.gTitel,gruppe.gThema FROM gruppe,istmitglied WHERE istmitglied.nutzerID='$userID' AND istmitglied.gruppenID=gruppe.gruppenID";
+        $sql = "SELECT gruppe.gTitel,gruppe.gThema,gruppe.gruppenID FROM gruppe,istmitglied WHERE istmitglied.nutzerID='$userID' AND istmitglied.gruppenID=gruppe.gruppenID";
         $db_erg = mysqli_query( $con, $sql );
         $result=[];
         while($row = mysqli_fetch_assoc($db_erg)){
