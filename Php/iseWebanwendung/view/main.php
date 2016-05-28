@@ -85,7 +85,7 @@ if(isset($_GET["submitPersInfo"])){
             </ul>
             <form class="navbar-form navbar-left" method="get" action="nutzerSuche.php">
                 <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Name eingeben">
+                    <input type="text" id="search" name="search" class="form-control" placeholder="Name eingeben">
                 </div>
                 <button type="submit" class="btn btn-default">Nutzer suchen</button>
             </form>
