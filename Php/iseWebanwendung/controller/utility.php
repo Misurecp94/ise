@@ -2,6 +2,7 @@
 
 class utility
 {
+    
     // Checks if User is logged in, if yes --> return true, else --> return false
     public static function isLoggedIn() {
         if (isset($_SESSION['userID']) && !empty($_SESSION['userID'])) { //if userID in session is set

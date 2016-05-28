@@ -85,8 +85,6 @@ class databaseController
         }
         return $result;
     }
-
-    
     
     public static function getGroupList($userID){
         
@@ -103,9 +101,60 @@ class databaseController
     }
     
 
+    // Thanks to: http://www.w3schools.com/php/php_file_upload.asp
     public static function changePic($userID, $pic){
-        // ToDo: change pic, if success return true, else return false
-        return false;
+        $target_dir = "../pic/";
+        $target_file = $target_dir . basename($pic["name"]);
+        $uploadOk = 1;
+        $imageFileType = pathinfo($target_file,PATHINFO_EXTENSION);
+        // Check if image file is a actual image or fake image
+        if(isset($_POST["submit"])) {
+            $check = getimagesize($pic["tmp_name"]);
+            if($check !== false) {
+                // Image ok
+                $uploadOk = 1;
+            } else {
+                // Not an Image
+                $uploadOk = 0;
+            }
+        }
+        if ($pic["size"] > 5000000) {
+            // to large
+            $uploadOk = 0;
+        }
+        if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
+            && $imageFileType != "gif" ) {
+            // nur Bilder erlauben
+            $uploadOk = 0;
+        }
+        if ($uploadOk == 0) {
+            return false;
+        } else {
+            if (move_uploaded_file($pic["tmp_name"], $target_file)) {
+                // Datei hochgeladen, Nutzer ImagePfad geben
+
+                databaseController::createDatabaseConnection();
+
+                $sqlhelper = $target_dir . basename($pic[name]);
+
+                $sql ="UPDATE benutzer SET benutzer.benutzerbild='$sqlhelper'WHERE benutzer.nutzerID = '$userID'";
+                global $con;
+                $db_erg=mysqli_query($con, $sql);
+                databaseController::closeDatabaseConnection();
+
+                if(!$db_erg){
+                    return false;
+                } else {
+                    return true;
+
+                }
+
+            } else {
+                // Some error ocurred
+                return false;
+            }
+        }
+        // Falls irgendwas schief geht:
     }
 
     public static function getPic($userID){
