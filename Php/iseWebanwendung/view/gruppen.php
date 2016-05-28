@@ -90,9 +90,9 @@
             <ul class="nav navbar-nav">
                 <li><a href="freunde.php">Freunde</a></li>
             </ul>
-            <form class="navbar-form navbar-left" method="get" action="nutzerSuche.php">
+             <form class="navbar-form navbar-left" method="get" action="nutzerSuche.php">
                 <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Name eingeben">
+                    <input type="text" id="search" name="search" class="form-control" placeholder="Name eingeben">
                 </div>
                 <button type="submit" class="btn btn-default">Nutzer suchen</button>
             </form>
