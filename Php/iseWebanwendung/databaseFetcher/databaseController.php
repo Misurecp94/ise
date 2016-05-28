@@ -51,6 +51,26 @@ class databaseController
              return false;
          }       
     }
+
+    public static function addUserToDatabase($inputEmail, $inputPassword)
+    {
+        global $con;
+        databaseController::createDatabaseConnection();
+        mysqli_autocommit($con,false);
+
+        $sql = "INSERT INTO benutzer(email, passwort) VALUES ('$inputEmail', '$inputPassword')";
+
+        if(mysqli_query($con,$sql)){
+            $lastID = mysqli_insert_id($con);
+            mysqli_commit($con);
+            databaseController::closeDatabaseConnection();
+            return $lastID;
+        } else {
+            mysqli_rollback($con);
+            databaseController::closeDatabaseConnection();
+            return null;
+        }
+    }
     
     public static function getBeitraege($userID,$Gruppe){
         
@@ -65,7 +85,7 @@ class databaseController
         }
         return $result;
     }
-    
+
     
     
     public static function getGroupList($userID){
@@ -89,9 +109,22 @@ class databaseController
     }
 
     public static function getPic($userID){
-        // ToDo Interessen zurueckgeben. If Kein Bild, Pfad -> "../pic/error.jpg" return
+        global $con;
+        databaseController::createDatabaseConnection();
 
-        return "../pic/error.jpg";
+        $sql = "SELECT benutzerbild FROM benutzer WHERE benutzer.nutzerID = '$userID'";
+
+        $db_erg = mysqli_query($con, $sql);
+        $row = mysqli_fetch_row($db_erg);
+        mysqli_free_result($db_erg);
+
+        databaseController::closeDatabaseConnection();
+
+        if($row[0] != null){
+            return $row[0];
+        } else {
+            return "../pic/error.jpg";
+        }
     }
 
     public static function getInteresse($userID){

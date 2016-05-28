@@ -28,7 +28,7 @@ if(isset($_GET["submitPersInfo"])){
         header("Location: main.php?error=password");
         exit();
     }
-// ToDO: DEBUG PICUPLOAD PLEASE!  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 } else if(isset($_POST["submitPic"])){
     if(isset($_FILES["pic"])){
         if(databaseController::changePic($_SESSION["userID"], $_FILES["pic"]) == true){

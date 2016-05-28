@@ -66,7 +66,7 @@ if(isset($_GET['inputEmail'])){
             if(isset($_GET['error'])){
                 echo "
                     <div class=\"alert alert-danger\">
-                        <strong>Achtung!</strong> Fehlerhafte Eingabe. Bitte versuchen Sie es erneut!
+                        <strong>Achtung!</strong> Fehlerhafte Eingabe. Bitte versuchen Sie es erneut! Möglicherweise ist die Email bereits vergeben!
                     </div>
                 ";
             }
