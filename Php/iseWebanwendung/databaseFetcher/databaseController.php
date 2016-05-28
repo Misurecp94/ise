@@ -81,8 +81,7 @@ class databaseController
         $db_erg = mysqli_query( $con, $sql );
         $row = mysqli_fetch_row($db_erg);
 
-        if(isset($row)){   
-        
+        if(isset($row)){
             
             $sql = "INSERT INTO istmitglied (nutzerID,gruppenID) VALUES ".
             "('$row[0]','$group')";
@@ -102,7 +101,7 @@ class databaseController
         
     }
     
-     public static function createBeitrag($userID, $BTitel, $BInhalt,$group){
+    public static function createBeitrag($userID, $BTitel, $BInhalt,$group){
         global $con;
         
         databaseController::createDatabaseConnection();
@@ -120,17 +119,20 @@ class databaseController
          }       
     }
     
-    public static function getBeitraege($userID,$Gruppe){
+    public static function getBeitraege($gruppe){
         
        global $con;
         databaseController::createDatabaseConnection();
         
-        $sql = "SELECT beitrag.bTitel,beitrag.bInhalt FROM beitrag WHERE beitrag.gruppenID='$Gruppe'";
+        $sql = "SELECT beitrag.bTitel,beitrag.bInhalt, benutzer.vorname, benutzer.nachname FROM beitrag, benutzer 
+                WHERE beitrag.gruppenID='$gruppe'
+                AND beitrag.nutzerID = benutzer.nutzerID";
         $db_erg = mysqli_query( $con, $sql );
         $result=[];
         while($row = mysqli_fetch_assoc($db_erg)){
             $result[] = $row;
         }
+        databaseController::closeDatabaseConnection();
         return $result;
     }
     
@@ -139,15 +141,34 @@ class databaseController
         global $con;
         databaseController::createDatabaseConnection();
         
-        $sql = "SELECT gruppe.gTitel,gruppe.gThema,gruppe.gruppenID FROM gruppe,istmitglied WHERE istmitglied.nutzerID='$userID' AND istmitglied.gruppenID=gruppe.gruppenID";
+        $sql = "SELECT gruppe.gTitel,gruppe.gThema,gruppe.gruppenID, benutzer.vorname, benutzer.nachname 
+                FROM gruppe,istmitglied, benutzer WHERE istmitglied.nutzerID='$userID' AND istmitglied.gruppenID=gruppe.gruppenID
+                AND gruppe.nutzerID = benutzer.nutzerID";
         $db_erg = mysqli_query( $con, $sql );
         $result=[];
         while($row = mysqli_fetch_assoc($db_erg)){
             $result[] = $row;
         }
+        databaseController::closeDatabaseConnection();
         return $result;
     }
     
+    public static function getMitglieder($gruppe){
+        // get ALLE mitglieder dieser Gruppe
+        global $con;
+        databaseController::createDatabaseConnection();
+        $sql = "SELECT benutzer.vorname, benutzer.nachname
+                FROM benutzer, istmitglied WHERE benutzer.nutzerID = istmitglied.nutzerID AND 
+                istmitglied.gruppenID='$gruppe'";
+
+        $db_erg = mysqli_query($con, $sql);
+        $result=[];
+        while($row = mysqli_fetch_assoc($db_erg)){
+            $result[] = $row;
+        }
+        databaseController::closeDatabaseConnection();
+        return $result;
+    }
 
     // Thanks to: http://www.w3schools.com/php/php_file_upload.asp
     public static function changePic($userID, $pic){

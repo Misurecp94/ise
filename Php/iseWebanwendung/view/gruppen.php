@@ -10,7 +10,8 @@
     $groups = databaseController::getGroupList($_SESSION["userID"]);
 
     if(isset($_GET["group"])){
-         $beitraege = databaseController::getBeitraege($_SESSION["userID"],$_GET["group"]);
+         $beitraege = databaseController::getBeitraege($_GET["group"]);
+         $mitglieder = databaseController::getMitglieder($_GET["group"]);
     }
 
 
@@ -121,11 +122,11 @@
                             <form  action="" method="get">
                                 <div class="form-group">
                                     <label for="gTitel">Gruppen Titel</label>
-                                    <input style="text-align:right;"  type="text" class="form-control" id="gTitel" name="gTitel" placeholder="Titel">
+                                    <input  type="text" class="form-control" id="gTitel" name="gTitel" placeholder="Titel">
                                 </div>
                                 <div class="form-group">
                                     <label for="gThema">Gruppen Thema</label>
-                                    <input style="text-align:right;"  type="text" class="form-control" id="gThema" name="gThema" placeholder="Thema">
+                                    <input  type="text" class="form-control" id="gThema" name="gThema" placeholder="Thema">
                                 </div>
                                 <div class="form-group">
                                     <button class="btn btn-default" type="submit" name="createGroup" id="creatGroup">Erstellen</button>
@@ -138,62 +139,79 @@
                 <div class="list-group">
                     <?php
                     for($i = 0; $i < count($groups); ++$i) {
-                        echo "<a href=\"?group=".$groups[$i]['gruppenID']."\" class=\"list-group-item\"><h4>".$groups[$i]['gTitel']."</h4> ".$groups[$i]['gThema']."</a>";
+                        echo "<a href=\"?group=".$groups[$i]['gruppenID']."\" class=\"list-group-item\"><h4>".$groups[$i]['gTitel']."</h4> ". $groups[$i]['gThema']. "  " .
+                            " - by " . $groups[$i]["vorname"]  ." " .  $groups[$i]["nachname"] . "</a>";
                     }
                     ?>
-
                 </div>
-                
             </div>
-            <div class="col-md-8">
+            <div class="col-md-4">
+                <label>Beitrag erstellen</label>
+                <br><br>
                 <form  action="" method="get">
-                <div class="row">
-                    Benutzer zu Gruppe hinzufügen
                     <div class="form-group">
-                      <label for="uEmail">Email</label>
-                      <input style="text-align:right;"  type="text" class="form-control" id="uEmail" name="uEmail" placeholder="Email">
+                        <label for="gTitel">Beitrags Titel</label>
+                        <input  type="text" class="form-control" id="bTitel" name="bTitel" placeholder="Titel">
+                    </div>
+                    <div class="form-group">
+                        <label for="gThema">Inhalt</label>
+                        <input   type="text" class="form-control" id="bInhalt" name="bInhalt" placeholder="Inhalt">
                     </div>
                     <input type="hidden" id=group name="group" value="<?php echo $_GET["group"] ?>">
                     <div class="form-group">
-                    <button class="btn btn-default" type="submit" name="addUser" id="addUser">Hinzufügen</button>
+                        <button class="btn btn-default" type="submit" name="createBeitrag" id="createBeitrag">Erstellen</button>
                     </div>
-            	</div>
                 </form>
                 <hr>
-
-                  <div class="list-group">
-                    <?php
-                      if(isset($beitraege) && count($beitraege)>0){
-                          //echo "<div class=\"row\">";
-                            for($i = 0; $i < count($beitraege); $i++) {
-                                echo "<li class=\"list-group-item\"><h4>".$beitraege[$i]['bTitel']."</h4> ".$beitraege[$i]['bInhalt']."</li>";
-                            }
-                          //echo "</div>";
-                        }else{
-                          echo "Keine Beitraege in dieser Gruppe";
-                      }
-                    ?>
-            	   </div>
-                
+                <label >Beitraege anzeigen</label>
+                <br><br>
+                <div class="list-group">
+                 <?php
+                  if(isset($beitraege) && count($beitraege)>0){
+                      //echo "<div class=\"row\">";
+                        for($i = 0; $i < count($beitraege); $i++) {
+                            echo "<li class=\"list-group-item\"><h4>".$beitraege[$i]['bTitel']."</h4> ".$beitraege[$i]['bInhalt'].
+                                " - by " . $beitraege[$i]["vorname"]  ." " .  $beitraege[$i]["nachname"] . "</li>";
+                        }
+                      //echo "</div>";
+                    }else{
+                      echo "Keine Beitraege in dieser Gruppe";
+                  }
+                ?>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label>Benutzer zu Gruppe hinzufügen</label>
+                <br><br>
+                <form  action="" method="get">
+                    <div class="form-group">
+                        <label for="uEmail">Email</label>
+                        <input  type="text" class="form-control" id="uEmail" name="uEmail" placeholder="Email">
+                    </div>
+                    <input type="hidden" id=group name="group" value="<?php echo $_GET["group"] ?>">
+                    <div class="form-group">
+                        <br>
+                        <button class="btn btn-default" type="submit" name="addUser" id="addUser">Hinzufügen</button>
+                    </div>
+                </form>
+                <br><br>
                 <hr>
-                <div class="row">
-                   <label>Beitrag erstellen</label>
-                 <br><br>
-                            <form  action="" method="get">
-                                <div class="form-group">
-                                    <label for="gTitel">Beitrags Titel</label>
-                                    <input style="text-align:right;"  type="text" class="form-control" id="bTitel" name="bTitel" placeholder="Titel">
-                                </div>
-                                <div class="form-group">
-                                    <label for="gThema">Inhalt</label>
-                                    <input style="text-align:right;"  type="text" class="form-control" id="bInhalt" name="bInhalt" placeholder="Inhalt">
-                                </div>
-                                 <input type="hidden" id=group name="group" value="<?php echo $_GET["group"] ?>">
-                                <div class="form-group">
-                                    <button class="btn btn-default" type="submit" name="createBeitrag" id="createBeitrag">Erstellen</button>
-                                </div>
-                            </form>
-            	</div>
+                <label>Aktuelle Nutzer der Gruppe</label>
+                <br><br>
+                <!-- chhange to show mitglieder -->
+                <div class="list-group">
+                    <?php
+                    if(isset($mitglieder) && count($mitglieder)>0){
+                        for($i = 0; $i < count($mitglieder); $i++) {
+                            echo "<li class=\"list-group-item\">";
+                                    echo "<h4>". $mitglieder[$i]['vorname']. "   " . $mitglieder[$i]['nachname'] . "</h4>";
+                            echo "</li>";
+                        }
+                    }else{
+                        echo "Keine Nutzer in dieser Gruppe";   // Sollte niemals bei Gruppenbetrachtung vorkommen! Ersteller muss drin sein!
+                    }
+                    ?>
+                </div>
             </div>
         </div>
     </div>
