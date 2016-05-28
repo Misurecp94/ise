@@ -21,6 +21,7 @@ class databaseController
         global $con;
         mysqli_close($con);
     }
+    
     public static function addFriend($userID,$otherID){
         global $con;
         databaseController::createDatabaseConnection();
@@ -37,6 +38,22 @@ class databaseController
             databaseController::closeDatabaseConnection();
             return false;
         }
+    }
+    
+     public static function getFriendList($userID){
+                global $con;
+        
+        databaseController::createDatabaseConnection();
+        
+        $sql = "SELECT benutzer.vorname,benutzer.nachname FROM benutzer,istbefreundet WHERE istbefreundet.nutzerID1='$userID' AND istbefreundet.nutzerID2=benutzer.nutzerID";
+       
+        $db_erg = mysqli_query( $con, $sql );
+        
+        $result=[];
+        while($row = mysqli_fetch_assoc($db_erg)){
+            $result[] = $row;
+        }
+        return $result;
     }
     
     

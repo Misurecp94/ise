@@ -1,10 +1,14 @@
 <?php
 if(session_status()!=PHP_SESSION_ACTIVE) session_start();
 include "../controller/utility.php";
+include "../databaseFetcher/databaseController.php";
 if(!utility::isLoggedIn()){ //if userID in session is NOT set
     header("Location: ../index.php");
     exit();
 }
+
+ $friends =databaseController::getFriendList($_SESSION["userID"]);
+
 ?>
 
 <!DOCTYPE html>
@@ -40,7 +44,7 @@ if(!utility::isLoggedIn()){ //if userID in session is NOT set
             <ul class="nav navbar-nav">
                 <li class="active"><a href="freunde.php">Freunde</a></li>
             </ul>
-             <form class="navbar-form navbar-left" method="get" action="nutzerSuche.php">
+            <form class="navbar-form navbar-left" method="get" action="nutzerSuche.php">
                 <div class="form-group">
                     <input type="text" id="search" name="search" class="form-control" placeholder="Name eingeben">
                 </div>
@@ -66,7 +70,16 @@ if(!utility::isLoggedIn()){ //if userID in session is NOT set
 
 <!-- Freunde anzeigen, möglichkeit bieten diese in gruppen hinzuzufügen und unterhaltungen zu beginnen -->
 
-
+                <div class="list-group">
+                    <?php
+                     for($i = 0; $i < count($friends); $i++) {
+                            echo "<li class=\"list-group-item\">";
+                                    echo "<h4>". $friends[$i]['vorname']. "   " . $friends[$i]['nachname'] . "</h4>";
+                            echo "</li>";
+                        }
+                    
+                    ?>
+                </div>
 
 
 
