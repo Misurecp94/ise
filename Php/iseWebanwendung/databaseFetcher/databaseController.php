@@ -28,7 +28,7 @@ class databaseController
         databaseController::createDatabaseConnection();
         
         mysqli_autocommit($con,false);
-        $sql = "INSERT INTO gruppe (gTitel,gThema,erstellerID) VALUES ".
+        $sql = "INSERT INTO gruppe (gTitel,gThema,nutzerID) VALUES ".
         "('$GTitel','$GThema','$userID')";
         
          if(mysqli_query( $con, $sql )){
@@ -107,16 +107,14 @@ class databaseController
         
         databaseController::createDatabaseConnection();
         
-        mysqli_autocommit($con,false);
-        $sql = "INSERT INTO beitrag (nutzerID,BTitel,BInhalt,gruppenID) VALUES ".       
-        "('$userID','$BTitel','$BInhalt','$group')";
+        $sql = "INSERT INTO beitrag (nutzerID,bTitel,bInhalt,gruppenID) VALUES ('$userID','$BTitel','$BInhalt','$group')";
         
          if(mysqli_query( $con, $sql )){
-            mysqli_commit($con);
+
             databaseController::closeDatabaseConnection();
             return true;
          }else{
-            mysqli_rollback($con);
+
              databaseController::closeDatabaseConnection();
              return false;
          }       
