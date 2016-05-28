@@ -72,6 +72,36 @@ class databaseController
         }
     }
     
+    public static function addUserToGroup($Email,$group){
+        global $con;
+        databaseController::createDatabaseConnection();
+
+        $sql = "SELECT nutzerID FROM benutzer WHERE benutzer.email ='$Email'";
+       
+        $db_erg = mysqli_query( $con, $sql );
+        $row = mysqli_fetch_row($db_erg);
+
+        if(isset($row)){   
+        
+            
+            $sql = "INSERT INTO istmitglied (nutzerID,gruppenID) VALUES ".
+            "('$row[0]','$group')";
+
+            if(mysqli_query( $con, $sql )){
+                mysqli_free_result($db_erg); 
+                databaseController::closeDatabaseConnection();
+                return true;
+            }else{
+                mysqli_free_result($db_erg); 
+                databaseController::closeDatabaseConnection();
+                return false;
+            } 
+        }
+         mysqli_free_result($db_erg); 
+        return false;
+        
+    }
+    
      public static function createBeitrag($userID, $BTitel, $BInhalt,$group){
         global $con;
         

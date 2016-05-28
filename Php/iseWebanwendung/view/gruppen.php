@@ -13,25 +13,34 @@
          $beitraege = databaseController::getBeitraege($_SESSION["userID"],$_GET["group"]);
     }
 
-    if(isset($_GET["createBeitrag"]) && isset($_GET["group"])){
 
+
+    if(isset($_GET["createBeitrag"]) && isset($_GET["group"])){
         if(databaseController::createBeitrag($_SESSION["userID"], $_GET["bTitel"], $_GET["bInhalt"],$_GET["group"])){
-            
              header("Location: gruppen.php?referal=false&group=".$_GET["group"]);
         }else{
             header("Location: gruppen.php?referal=false&group=".$_GET["group"]);
         }
         exit();
-    }else if(isset($_GET["group"]) && !isset($_GET["referal"])){
-        echo "working";
-        if(databaseController::getBeitraege($_SESSION["userID"], $_GET["group"])){
-            echo "working2";
+        
+    }else if(isset($_GET["addUser"]) && isset($_GET["group"])){
+        
+        if(databaseController::addUserToGroup($_GET["uEmail"], $_GET["group"])){
+
             header("Location: gruppen.php?referal=false&group=".$_GET["group"]);
         } else{
             header("Location: gruppen.php?referal=false&group=".$_GET["group"]);
         }
-       
         exit();
+        
+    }else if(isset($_GET["group"]) && !isset($_GET["referal"])){
+        if(databaseController::getBeitraege($_SESSION["userID"], $_GET["group"])){
+            header("Location: gruppen.php?referal=false&group=".$_GET["group"]);
+        } else{
+            header("Location: gruppen.php?referal=false&group=".$_GET["group"]);
+        }
+        exit();
+        
     }
 
 
@@ -122,6 +131,7 @@
                                     <button class="btn btn-default" type="submit" name="createGroup" id="creatGroup">Erstellen</button>
                                 </div>
                             </form>
+                            
                 <hr>
                 <label >Gruppen anzeigen</label>
                  <br><br>
@@ -136,10 +146,11 @@
                 
             </div>
             <div class="col-md-8">
+                <form  action="" method="get">
                 <div class="row">
                     Benutzer zu Gruppe hinzufügen
                     <div class="form-group">
-                      <label for="gThema">Email</label>
+                      <label for="uEmail">Email</label>
                       <input style="text-align:right;"  type="text" class="form-control" id="uEmail" name="uEmail" placeholder="Email">
                     </div>
                     <input type="hidden" id=group name="group" value="<?php echo $_GET["group"] ?>">
@@ -147,8 +158,9 @@
                     <button class="btn btn-default" type="submit" name="addUser" id="addUser">Hinzufügen</button>
                     </div>
             	</div>
+                </form>
                 <hr>
-                
+
                   <div class="list-group">
                     <?php
                       if(isset($beitraege) && count($beitraege)>0){
