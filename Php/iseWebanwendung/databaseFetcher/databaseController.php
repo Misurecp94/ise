@@ -28,14 +28,14 @@ class databaseController
         databaseController::createDatabaseConnection();
         
         mysqli_autocommit($con,false);
-        $sql = "INSERT INTO gruppe (G_Titel,G_Thema,Ersteller_ID) VALUES ".       
+        $sql = "INSERT INTO gruppe (gTitel,gThema,erstellerID) VALUES ".
         "('$GTitel','$GThema','$userID')";
         
          if(mysqli_query( $con, $sql )){
              // insert in ist mitglied mit letzter id von gruppe
             $last_id = mysqli_insert_id($con);
              
-            $sql = "INSERT INTO istmitglied (Benutzer_ID,Gruppen_ID) VALUES ('$userID','$last_id')";
+            $sql = "INSERT INTO istmitglied (nutzerID,gruppenID) VALUES ('$userID','$last_id')";
              if(mysqli_query( $con, $sql )){
                  mysqli_commit($con);
                  databaseController::closeDatabaseConnection();
@@ -57,7 +57,7 @@ class databaseController
        global $con;
         databaseController::createDatabaseConnection();
         
-        $sql = "SELECT gruppe.G_Titel,gruppe.G_Thema FROM gruppe,istmitglied WHERE istmitglied.Benutzer_ID='$userID' AND istmitglied.Gruppen_ID=gruppe.Gruppen_ID";
+        $sql = "SELECT gruppe.gTitel,gruppe.gThema FROM gruppe,istmitglied WHERE istmitglied.nutzerID='$userID' AND istmitglied.gruppenID=gruppe.gruppenID";
         $db_erg = mysqli_query( $con, $sql );
         
         while($row = mysqli_fetch_assoc($db_erg)){
@@ -73,7 +73,7 @@ class databaseController
         global $con;
         databaseController::createDatabaseConnection();
         
-        $sql = "SELECT gruppe.G_Titel,gruppe.G_Thema FROM gruppe,istmitglied WHERE istmitglied.Benutzer_ID='$userID' AND istmitglied.Gruppen_ID=gruppe.Gruppen_ID";
+        $sql = "SELECT gruppe.gTitel,gruppe.gThema FROM gruppe,istmitglied WHERE istmitglied.nutzerID='$userID' AND istmitglied.gruppenID=gruppe.gruppenID";
         $db_erg = mysqli_query( $con, $sql );
         
         while($row = mysqli_fetch_assoc($db_erg)){
@@ -99,8 +99,7 @@ class databaseController
         global $con;
         databaseController::createDatabaseConnection();
         
-        $sql = "SELECT Interesse FROM benutzer,profil WHERE benutzer.Benutzer_ID ='$userID' AND ".
-            "Profil.Benutzer_ID='$userID'";
+        $sql = "SELECT interesse FROM benutzer WHERE benutzer.nutzerID ='$userID'";
        
         $db_erg = mysqli_query( $con, $sql );
         $row = mysqli_fetch_row($db_erg);
@@ -120,7 +119,7 @@ class databaseController
         global $con;
         databaseController::createDatabaseConnection();
         
-        $sql = "SELECT Nachname,Vorname,Geburtstag,Groesse,Geschlecht,Beruf FROM profil,persoenlicheinformation  WHERE profil.Benutzer_ID='$userID'";
+        $sql = "SELECT nachname,vorname,age,groesse,geschlecht,beruf FROM benutzer  WHERE benutzer.nutzerID='$userID'";
        
         $db_erg = mysqli_query( $con, $sql );
         $row = mysqli_fetch_row($db_erg);
@@ -150,7 +149,7 @@ class databaseController
         global $con;
         databaseController::createDatabaseConnection();
         
-        $sql = "SELECT Email,Land,Ort,PLZ,TelNr FROM benutzer,profil,kontaktdaten WHERE ". "kontaktdaten.Benutzer_ID='$userID'";
+        $sql = "SELECT email,land,ort,ort,telNr FROM benutzer WHERE ". "benutzer.nutzerID='$userID'";
        
         $db_erg = mysqli_query( $con, $sql );
         $row = mysqli_fetch_row($db_erg);
@@ -172,8 +171,7 @@ class databaseController
         
         databaseController::createDatabaseConnection();
         
-        $sql = "SELECT benutzer.Benutzer_ID FROM benutzer,kontaktdaten WHERE ". "benutzer.passwort='$password' AND benutzer.Benutzer_ID=kontaktdaten.Kontaktdaten_ID AND ". 
-        "kontaktdaten.Email='$email'";
+        $sql = "SELECT benutzer.nutzerID FROM benutzer WHERE ". "benutzer.passwort='$password' AND benutzer.email='$email'";
         global $con;
         $db_erg = mysqli_query( $con, $sql );
 
@@ -188,7 +186,7 @@ class databaseController
     {
         databaseController::createDatabaseConnection();
 
-        $sql = "UPDATE profil SET profil.Interesse='$interests' WHERE profil.Benutzer_ID='$userID'";
+        $sql = "UPDATE benutzer SET benutzer.Interesse='$interests' WHERE benutzer.nutzerID='$userID'";
         global $con;
         $db_erg = mysqli_query( $con, $sql );
 
@@ -206,13 +204,13 @@ class databaseController
     {
         databaseController::createDatabaseConnection();
 
-        $sql = "UPDATE kontaktdaten SET ".
-            "kontaktdaten.Email='$email', ". 
-            "kontaktdaten.Land='$land', ".
-            "kontaktdaten.Ort='$ort', ".
-            "kontaktdaten.PLZ='$plz', ".
-            "kontaktdaten.TelNr='$telNr' ".
-            "WHERE kontaktdaten.Benutzer_ID='$userID'";
+        $sql = "UPDATE benutzer SET ".
+            "benutzer.email='$email', ".
+            "benutzer.land='$land', ".
+            "benutzer.ort='$ort', ".
+            "benutzer.plz='$plz', ".
+            "benutzer.telNr='$telNr' ".
+            "WHERE benutzer.nutzerID='$userID'";
         
         global $con;
         $db_erg = mysqli_query( $con, $sql );
@@ -220,7 +218,6 @@ class databaseController
         databaseController::closeDatabaseConnection();
         
         if (!$db_erg) {
-            printf("Errormessage: %s\n", mysqli_error($link));
             return false;
         } else {
             return true;
@@ -232,8 +229,8 @@ class databaseController
                databaseController::createDatabaseConnection();
 
         $sql = "UPDATE benutzer SET ".
-            "benutzer.Passwort='$newPW1' ". 
-            "WHERE benutzer.benutzer_ID='$userID'";
+            "benutzer.passwort='$newPW1' ".
+            "WHERE benutzer.nutzerID='$userID'";
         
         global $con;
         $db_erg = mysqli_query( $con, $sql );
@@ -251,14 +248,14 @@ class databaseController
     {
         databaseController::createDatabaseConnection();
 
-        $sql = "UPDATE persoenlicheinformation SET ".
-            "persoenlicheinformation.Vorname='$vName',". 
-            "persoenlicheinformation.Nachname='$nName', ".
-            "persoenlicheinformation.Geburtstag='$age', ".
-            "persoenlicheinformation.Groesse='$groesse', ".
-            "persoenlicheinformation.Beruf='$work', ".
-            "persoenlicheinformation.Geschlecht='$gender' ".
-            "WHERE persoenlicheinformation.Benutzer_ID='$userID'";
+        $sql = "UPDATE benutzer SET ".
+            "benutzer.vorname='$vName',".
+            "benutzer.nachname='$nName', ".
+            "benutzer.age='$age', ".
+            "benutzer.groesse='$groesse', ".
+            "benutzer.beruf='$work', ".
+            "benutzer.geschlecht='$gender' ".
+            "WHERE benutzer.nutzerID='$userID'";
         
         global $con;
         $db_erg = mysqli_query( $con, $sql );
