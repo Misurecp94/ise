@@ -21,6 +21,58 @@ class databaseController
         global $con;
         mysqli_close($con);
     }
+    public static function addFriend($userID,$otherID){
+        global $con;
+        databaseController::createDatabaseConnection();
+        mysqli_autocommit($con,false);
+
+        $sql = "INSERT INTO istbefreundet(nutzerID1, nutzerID2) VALUES ('$userID', '$otherID')";
+
+        if(mysqli_query($con,$sql)){
+            mysqli_commit($con);
+            databaseController::closeDatabaseConnection();
+            return true;
+        } else {
+            mysqli_rollback($con);
+            databaseController::closeDatabaseConnection();
+            return false;
+        }
+    }
+    
+    
+    public static function isFriend($userID, $otherID){
+        global $con;
+        
+        databaseController::createDatabaseConnection();
+        
+        $sql = "SELECT COUNT(*) AS total FROM istbefreundet WHERE nutzerID1='$userID' AND nutzerID2='$otherID'";
+       
+        $db_erg = mysqli_query( $con, $sql );
+
+        $row = mysqli_fetch_row($db_erg);
+        mysqli_free_result($db_erg); 
+
+        databaseController::closeDatabaseConnection();
+        return $row[0];
+        
+    }
+    
+    
+    public static function searchUser($search){
+        global $con;
+        
+        databaseController::createDatabaseConnection();
+        
+        $sql = "SELECT nutzerID,vorname,nachname,email FROM benutzer WHERE (benutzer.vorname LIKE '%$search%' OR benutzer.nachname LIKE '%$search%' OR benutzer.email LIKE '%$search%')";
+       
+        $db_erg = mysqli_query( $con, $sql );
+        
+        $result=[];
+        while($row = mysqli_fetch_assoc($db_erg)){
+            $result[] = $row;
+        }
+        return $result;
+    }
     
     public static function createGroup($userID, $GTitel, $GThema){
         global $con;
