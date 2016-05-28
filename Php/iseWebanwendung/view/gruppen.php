@@ -9,22 +9,42 @@
 
     $groups = databaseController::getGroupList($_SESSION["userID"]);
 
+    if(isset($_GET["group"])){
+         $beitraege = databaseController::getBeitraege($_SESSION["userID"],$_GET["group"]);
+    }
 
-    if(isset($_GET["createGroup"])){
-        echo "isworking";
+    if(isset($_GET["createBeitrag"]) && isset($_GET["group"])){
 
-        if(databaseController::createGroup($_SESSION["userID"], $_GET["gTitel"], $_GET["gThema"])){
-            header("Location: gruppen.php");
+        if(databaseController::createBeitrag($_SESSION["userID"], $_GET["bTitel"], $_GET["bInhalt"],$_GET["group"])){
+            
+             header("Location: gruppen.php?referal=false&group=".$_GET["group"]);
         }else{
-             header("Location: gruppen.php?error=fehlerhappened");
+            header("Location: gruppen.php?referal=false&group=".$_GET["group"]);
         }
-        header("Location: gruppen.php");
+        exit();
+    }else if(isset($_GET["group"]) && !isset($_GET["referal"])){
+        echo "working";
+        if(databaseController::getBeitraege($_SESSION["userID"], $_GET["group"])){
+            echo "working2";
+            header("Location: gruppen.php?referal=false&group=".$_GET["group"]);
+        } else{
+            header("Location: gruppen.php?referal=false&group=".$_GET["group"]);
+        }
+       
         exit();
     }
 
 
-
-
+    if(isset($_GET["createGroup"])){
+        
+        if(databaseController::createGroup($_SESSION["userID"], $_GET["gTitel"], $_GET["gThema"])){
+            header("Location: gruppen.php");
+        }else{
+             header("Location: gruppen.php?error=fehlerhappened1");
+        }
+        exit();
+    }
+   
 ?>
 
 <!DOCTYPE html>
@@ -108,7 +128,7 @@
                 <div class="list-group">
                     <?php
                     for($i = 0; $i < count($groups); ++$i) {
-                        echo "<a href=\"#\" class=\"list-group-item\"><h4>".$groups[$i]['G_Titel']."</h4> ".$groups[$i]['G_Thema']."</a>";
+                        echo "<a href=\"?group=".$groups[$i]['Gruppen_ID']."\" class=\"list-group-item\"><h4>".$groups[$i]['G_Titel']."</h4> ".$groups[$i]['G_Thema']."</a>";
                     }
                     ?>
 
@@ -118,36 +138,57 @@
             <div class="col-md-8">
                 <div class="row">
                     Benutzer zu Gruppe hinzufügen
+                    <div class="form-group">
+                      <label for="gThema">Email</label>
+                      <input style="text-align:right;"  type="text" class="form-control" id="uEmail" name="uEmail" placeholder="Email">
+                    </div>
+                    <input type="hidden" id=group name="group" value="<?php echo $_GET["group"] ?>">
+                    <div class="form-group">
+                    <button class="btn btn-default" type="submit" name="addUser" id="addUser">Hinzufügen</button>
+                    </div>
             	</div>
                 <hr>
-                <div class="row">
-                   Beiträge anzeigen
-            	</div>
-                <hr>
-                <div class="row">
-                   Beitrag hinzufügen
-            	</div>
                 
+                  <div class="list-group">
+                    <?php
+                      if(isset($beitraege) && count($beitraege)>0){
+                          //echo "<div class=\"row\">";
+                            for($i = 0; $i < count($beitraege); $i++) {
+                                echo "<li class=\"list-group-item\"><h4>".$beitraege[$i]['B_Titel']."</h4> ".$beitraege[$i]['B_Inhalt']."</li>";
+                            }
+                          //echo "</div>";
+                        }else{
+                          echo "Keine Beitraege in dieser Gruppe";
+                      }
+                    ?>
+            	   </div>
+                
+                <hr>
+                <div class="row">
+                   <label>Beitrag erstellen</label>
+                 <br><br>
+                            <form  action="" method="get">
+                                <div class="form-group">
+                                    <label for="gTitel">Beitrags Titel</label>
+                                    <input style="text-align:right;"  type="text" class="form-control" id="bTitel" name="bTitel" placeholder="Titel">
+                                </div>
+                                <div class="form-group">
+                                    <label for="gThema">Inhalt</label>
+                                    <input style="text-align:right;"  type="text" class="form-control" id="bInhalt" name="bInhalt" placeholder="Inhalt">
+                                </div>
+                                 <input type="hidden" id=group name="group" value="<?php echo $_GET["group"] ?>">
+                                <div class="form-group">
+                                    <button class="btn btn-default" type="submit" name="createBeitrag" id="createBeitrag">Erstellen</button>
+                                </div>
+                            </form>
+            	</div>
             </div>
-
-            
-            
-            
         </div>
-         
-        
-        
-        
-        
-        
-        
-    
-    
     </div>
     
     
     
-<!-- Gruppen anzeigen, Beiträge verfassen -->
+
 
 
 

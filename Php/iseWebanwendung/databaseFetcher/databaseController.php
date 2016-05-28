@@ -72,6 +72,36 @@ class databaseController
         }
     }
     
+     public static function createBeitrag($userID, $BTitel, $BInhalt,$group){
+        global $con;
+        
+        databaseController::createDatabaseConnection();
+        
+        mysqli_autocommit($con,false);
+        $sql = "INSERT INTO beitrag (Ersteller_ID,B_Titel,B_Inhalt) VALUES ".       
+        "('$userID','$BTitel','$BInhalt')";
+        
+         if(mysqli_query( $con, $sql )){
+            
+            $last_id = mysqli_insert_id($con);
+             
+            $sql = "INSERT INTO g_beinhaltet_b (Gruppen_ID,Beitrags_ID) VALUES ('$group','$last_id')";
+             if(mysqli_query( $con, $sql )){
+                 mysqli_commit($con);
+                 databaseController::closeDatabaseConnection();
+                 return true;
+             }else{
+                 mysqli_rollback($con);
+                 databaseController::closeDatabaseConnection();
+                 return false;
+             }
+         }else{
+            mysqli_rollback($con);
+             databaseController::closeDatabaseConnection();
+             return false;
+         }       
+    }
+    
     public static function getBeitraege($userID,$Gruppe){
         
        global $con;
@@ -79,7 +109,7 @@ class databaseController
         
         $sql = "SELECT gruppe.gTitel,gruppe.gThema FROM gruppe,istmitglied WHERE istmitglied.nutzerID='$userID' AND istmitglied.gruppenID=gruppe.gruppenID";
         $db_erg = mysqli_query( $con, $sql );
-        
+        $result=[];
         while($row = mysqli_fetch_assoc($db_erg)){
             $result[] = $row;
         }
@@ -93,7 +123,7 @@ class databaseController
         
         $sql = "SELECT gruppe.gTitel,gruppe.gThema FROM gruppe,istmitglied WHERE istmitglied.nutzerID='$userID' AND istmitglied.gruppenID=gruppe.gruppenID";
         $db_erg = mysqli_query( $con, $sql );
-        
+        $result=[];
         while($row = mysqli_fetch_assoc($db_erg)){
             $result[] = $row;
         }
