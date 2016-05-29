@@ -1,6 +1,7 @@
 <?php
 if(session_status()!=PHP_SESSION_ACTIVE) session_start();
 include "../controller/utility.php";
+include "../databaseFetcher/databaseController.php";
 if(!utility::isLoggedIn()){ //if userID in session is NOT set
     header("Location: ../index.php");
     exit();
@@ -9,6 +10,18 @@ if(!isset($_SESSION["adminID"])){
     header("Location: ../index.php");
     exit();
 }
+
+    $search="";
+    $users =databaseController::searchUser($search, $_SESSION["userID"]);
+ 
+if(isset($_GET["makeAdmin"])){
+    databaseController::makeAdmin($_GET["otherID"]);
+ }
+
+if(isset($_GET["blockUser"])){
+    $user =databaseController::blockUser($_GET["otherID"]);
+ }
+
 ?>
 
 <!DOCTYPE html>
@@ -80,11 +93,38 @@ if(!isset($_SESSION["adminID"])){
 <!-- Navbar end -->
 <!-- Body of the Page -->
 
+<div class="col-md-4"></div>
+<div class="col-md-4">
+<?php
+        if(isset($users) && count($users)>0){
+            for($i = 0; $i < count($users); ++$i) {
+               echo "<div class=\"list-group \"><li class=\"list-group-item\"><h4>".$users[$i]['vorname']." ".$users[$i]['nachname']."</h4>".$users[$i]['email'];
+                
+                if(!databaseController::isAdmin($users[$i]["nutzerID"])){
+                    echo "<form  action=\"\" method=\"get\">
+                    <button type=\"submit\" class=\"btn btn-default btn-xs pull-right\" name=\"makeAdmin\" id=\"makeAdmin\">Make Admin</button>
 
+                    <input type=\"hidden\" id=\"otherID\" name=\"otherID\" class=\"form-control\" value=". $users[$i]["nutzerID"]."></form>";
+                }
+                                
+                if(databaseController::isBanned($users[$i]["nutzerID"])!='1'){
+                    echo "<form  action=\"\" method=\"get\">
+                    <button type=\"submit\" class=\"btn btn-default btn-xs pull-right\" name=\"blockUser\" id=\"blockUser\">Sperren</button>
 
+                    <input type=\"hidden\" id=\"otherID\" name=\"otherID\" class=\"form-control\" value=". $users[$i]["nutzerID"]."></form>";
+                }
+                            
+                echo "</form></li></div>";
 
+            }
+                         
+        }else{
+            echo "Keine User gefunden";
+        }
+    ?>
 
-
+</div>
+<div class="col-md-4"></div>
 
 
 

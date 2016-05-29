@@ -135,6 +135,26 @@ class databaseController
         
     }
 
+    public static function isBanned($otherID){
+        databaseController::createDatabaseConnection();
+        global $con;
+
+        $sql = "SELECT benutzer.sperre FROM benutzer WHERE benutzer.nutzerID = '$otherID'";
+
+        $db_erg = mysqli_query($con, $sql);
+        if($db_erg){
+            $row = mysqli_fetch_row($db_erg);
+            mysqli_free_result($db_erg);
+            databaseController::closeDatabaseConnection();
+            return $row[0];
+        }else{
+            return null;
+            
+        }
+       
+
+    }
+    
     public static function convStarted($userID, $otherID)
     {
         global $con;
@@ -657,7 +677,7 @@ class databaseController
         
         databaseController::createDatabaseConnection();
         
-        $sql = "SELECT benutzer.nutzerID FROM benutzer WHERE ". "benutzer.passwort='$password' AND benutzer.email='$email'";
+        $sql = "SELECT benutzer.nutzerID FROM benutzer WHERE ". "benutzer.passwort='$password' AND benutzer.email='$email' AND benutzer.sperre<>'1' ";
         global $con;
         $db_erg = mysqli_query( $con, $sql );
 
@@ -683,6 +703,54 @@ class databaseController
         return $row[0];
     }
 
+    public static function makeAdmin($otherID){
+        
+        global $con;
+        
+        databaseController::createDatabaseConnection();
+
+        $sql = "INSERT INTO admin (nutzerID) VALUES ('$otherID')";
+        
+         if(mysqli_query( $con, $sql )){
+
+            databaseController::closeDatabaseConnection();
+            return true;
+         }else{
+
+             databaseController::closeDatabaseConnection();
+             return false;
+         } 
+        
+    }
+    
+    public static function blockUser($otherID){
+        
+        global $con;
+        
+        databaseController::createDatabaseConnection();
+        
+
+
+        $sql = "UPDATE benutzer SET benutzer.sperre='1' WHERE benutzer.nutzerID='$otherID'";
+        
+         if(mysqli_query( $con, $sql )){
+
+            databaseController::closeDatabaseConnection();
+            return true;
+         }else{
+
+             databaseController::closeDatabaseConnection();
+             return false;
+         } 
+        
+        
+    }
+    
+    
+    
+    
+    
+    
     public static function changeInteresse($userID, $interests)
     {
         databaseController::createDatabaseConnection();
