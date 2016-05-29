@@ -645,7 +645,7 @@ class databaseController
         global $con;
         databaseController::createDatabaseConnection();
         
-        $sql = "SELECT email,land,ort,ort,telNr FROM benutzer WHERE ". "benutzer.nutzerID='$userID'";
+        $sql = "SELECT email,land,ort,plz,telNr FROM benutzer WHERE ". "benutzer.nutzerID='$userID'";
        
         $db_erg = mysqli_query( $con, $sql );
         $row = mysqli_fetch_row($db_erg);

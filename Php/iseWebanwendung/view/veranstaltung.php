@@ -7,11 +7,6 @@
         exit();
     }
 
-    $events = databaseController::getEventList($_SESSION["userID"]);
-
-    $openEvents = databaseController::getOpenEventList($_SESSION["userID"]);
-    $closedEvents = databaseController::getClosedEventList($_SESSION["userID"]);
-
     if(isset($_GET["addGuest"]) && isset($_GET["event"])){
         
         if(databaseController::addGuest($_GET["uEmail"], $_GET["event"])){
@@ -54,7 +49,14 @@
         }
         exit();
     }
-   
+
+
+$events = databaseController::getEventList($_SESSION["userID"]);
+
+$openEvents = databaseController::getOpenEventList($_SESSION["userID"]);
+$closedEvents = databaseController::getClosedEventList($_SESSION["userID"]);
+
+
 ?>
 
 <!DOCTYPE html>

@@ -6,10 +6,6 @@ if(!utility::isLoggedIn()){ //if userID in session is NOT set
     header("Location: ../index.php");
     exit();
 }
-$kontakts = databaseController::getKontaktdaten($_SESSION["userID"]);
-$persInfo = databaseController::getPersInfo($_SESSION["userID"]);
-$interests = databaseController::getInteresse($_SESSION["userID"]);
-$pic = databaseController::getPic($_SESSION["userID"]);
 
 if(isset($_GET["submitPersInfo"])){
     databaseController::changePersInfo($_SESSION["userID"], $_GET["nName"], $_GET["vName"], $_GET["age"], $_GET["groesse"], $_GET["gender"], $_GET["work"]);
@@ -48,6 +44,11 @@ if(isset($_GET["submitPersInfo"])){
     header("Location: main.php");
     exit();
 }
+$kontakts = databaseController::getKontaktdaten($_SESSION["userID"]);
+$persInfo = databaseController::getPersInfo($_SESSION["userID"]);
+$interests = databaseController::getInteresse($_SESSION["userID"]);
+$pic = databaseController::getPic($_SESSION["userID"]);
+
 ?>
 
 <!DOCTYPE html>
