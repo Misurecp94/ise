@@ -9,6 +9,9 @@ if(isset($_GET['inputEmail'])){
     include"../databaseFetcher/databaseController.php";
     if(($userID = databaseController::addUserToDatabase($_GET['inputEmail'], $_GET['inputPassword']))!=null){
         $_SESSION['userID'] = $userID;
+        if(($adminID = databaseController::isAdmin($userID))!=null){
+            $_SESSION['adminID'] = $adminID;
+        }
         header("Location:main.php");
     } else {
         header("Location:register.php?error=\"\"");
@@ -35,7 +38,7 @@ if(isset($_GET['inputEmail'])){
     </div>
     <div class="col col-md-4">
         <div class="col col-md-12">
-            <h1 align="center">Login</h1>
+            <h1 align="center">Registrierung</h1>
             <br/>
             <h3 align="center">Bitte geben Sie Ihre Email und ihr Passwort ein!</h3>
             <br/>

@@ -105,6 +105,18 @@
             <ul class="nav navbar-nav">
                 <li><a href="veranstaltung.php">Veranstaltungen</a></li>
             </ul>
+            <?php
+            if(isset($_SESSION["adminID"])) {
+                ?>
+                <ul class="nav navbar-nav">
+                    <li><a href="adminErzeugen.php">Admin anlegen</a></li>
+                </ul>
+                <ul class="nav navbar-nav">
+                    <li><a href="userSperren.php">User sperren</a></li>
+                </ul>
+                <?php
+            }
+            ?>
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="../controller/logout.php">Logout</a></li>
             </ul>
@@ -119,19 +131,19 @@
             <div class="col-md-4">
                 <label >Gruppen erstellen</label>
                  <br><br>
-                            <form  action="" method="get">
-                                <div class="form-group">
-                                    <label for="gTitel">Gruppen Titel</label>
-                                    <input  type="text" class="form-control" id="gTitel" name="gTitel" placeholder="Titel">
-                                </div>
-                                <div class="form-group">
-                                    <label for="gThema">Gruppen Thema</label>
-                                    <input  type="text" class="form-control" id="gThema" name="gThema" placeholder="Thema">
-                                </div>
-                                <div class="form-group">
-                                    <button class="btn btn-default" type="submit" name="createGroup" id="creatGroup">Erstellen</button>
-                                </div>
-                            </form>
+                <form  action="" method="get">
+                    <div class="form-group">
+                        <label for="gTitel">Gruppen Titel</label>
+                        <input  type="text" class="form-control" id="gTitel" name="gTitel" placeholder="Titel">
+                    </div>
+                    <div class="form-group">
+                        <label for="gThema">Gruppen Thema</label>
+                        <input  type="text" class="form-control" id="gThema" name="gThema" placeholder="Thema">
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-default" type="submit" name="createGroup" id="creatGroup">Erstellen</button>
+                    </div>
+                </form>
                             
                 <hr>
                 <label >Gruppen anzeigen</label>

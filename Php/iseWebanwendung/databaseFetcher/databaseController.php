@@ -96,7 +96,7 @@ class databaseController
             $lastID = mysqli_insert_id($con);
             $sql = "INSERT INTO fuehren(unterhaltungsID, nutzerID1, nutzerID2) VALUES ('$lastID', '$userID', '$otherID')";
             if(mysqli_query($con, $sql)){
-                $sql = "INSERT INTO fuehren(unterhaltungsID, nutzerID1, nutzerID2) VALUES('lastID','$otherID', '$userID')";
+                $sql = "INSERT INTO fuehren(unterhaltungsID, nutzerID1, nutzerID2) VALUES('$lastID','$otherID', '$userID')";
                 if(mysqli_query($con, $sql)){
                     mysqli_commit($con);
                     databaseController::closeDatabaseConnection();
@@ -531,6 +531,21 @@ class databaseController
         $row = mysqli_fetch_row($db_erg);
         mysqli_free_result($db_erg); 
 
+        databaseController::closeDatabaseConnection();
+        return $row[0];
+    }
+
+    public static function isAdmin($userID)
+    {
+        databaseController::createDatabaseConnection();
+        global $con;
+
+        $sql = "SELECT admin.adminID FROM admin WHERE admin.nutzerID = '$userID'";
+
+        $db_erg = mysqli_query($con, $sql);
+
+        $row = mysqli_fetch_row($db_erg);
+        mysqli_free_result($db_erg);
         databaseController::closeDatabaseConnection();
         return $row[0];
     }

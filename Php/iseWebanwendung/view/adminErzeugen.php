@@ -1,13 +1,14 @@
 <?php
 if(session_status()!=PHP_SESSION_ACTIVE) session_start();
 include "../controller/utility.php";
-include "../databaseFetcher/databaseController.php";
 if(!utility::isLoggedIn()){ //if userID in session is NOT set
     header("Location: ../index.php");
     exit();
 }
-
-$freunde = databaseController::getFriends($_SESSION["userID"]);
+if(!isset($_SESSION["adminID"])){
+    header("Location: ../index.php");
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -41,9 +42,9 @@ $freunde = databaseController::getFriends($_SESSION["userID"]);
                 <li><a href="main.php">Mein Profil</a></li>
             </ul>
             <ul class="nav navbar-nav">
-                <li class="active"><a href="freunde.php">Freunde</a></li>
+                <li><a href="freunde.php">Freunde</a></li>
             </ul>
-             <form class="navbar-form navbar-left" method="get" action="nutzerSuche.php">
+            <form class="navbar-form navbar-left" method="get" action="nutzerSuche.php">
                 <div class="form-group">
                     <input type="text" id="search" name="search" class="form-control" placeholder="Name eingeben">
                 </div>
@@ -62,7 +63,7 @@ $freunde = databaseController::getFriends($_SESSION["userID"]);
             if(isset($_SESSION["adminID"])) {
                 ?>
                 <ul class="nav navbar-nav">
-                    <li><a href="adminErzeugen.php">Admin anlegen</a></li>
+                    <li class="active"><a href="adminErzeugen.php">Admin anlegen</a></li>
                 </ul>
                 <ul class="nav navbar-nav">
                     <li><a href="userSperren.php">User sperren</a></li>
@@ -79,32 +80,13 @@ $freunde = databaseController::getFriends($_SESSION["userID"]);
 <!-- Navbar end -->
 <!-- Body of the Page -->
 
-<!-- Freunde anzeigen, unterhaltungen beginnen -->
 
-<div class="row">
-    <div class="col-md-4"></div>
-    <div class="col-md-4">
-        <?php
-        if(isset($freunde) && count($freunde)>0){
-            for($i = 0; $i < count($freunde); ++$i) {
-                echo "<div class=\"list-group \"><li class=\"list-group-item\"><h4>".$freunde[$i]['vorname']." ".$freunde[$i]['nachname']."</h4>".$freunde[$i]['email'];
 
-                if(databaseController::convStarted($_SESSION["userID"],$freunde[$i]['nutzerID'])==0){
 
-                    echo "<form  action=\"unterhaltung.php\" method=\"get\"><button type=\"submit\" class=\"btn btn-default btn-xs pull-right\" name=\"startConv\" id=\"startConv\"> 
-                            Unterhaltung starten</button>
-                            <input type=\"hidden\" id=\"otherID\" name=\"otherID\" class=\"form-control\" value=".$freunde[$i]['nutzerID']."></form>";
-                }
-                echo "</li></div>";
-            }
 
-        }else{
-            echo "Keine User gefunden";
-        }
-        ?>
-    </div>
-    <div class="col-md-4"></div>
-</div>
+
+
+
 
 
 <!-- End Body of the Page -->
