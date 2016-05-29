@@ -6,6 +6,11 @@ if(!utility::isLoggedIn()){ //if userID in session is NOT set
     header("Location: ../index.php");
     exit();
 }
+if(databaseController::isBanned($_SESSION["userID"])){
+    utility::logout();
+    header("Location: login.php?error=2");
+    exit();
+}
 
 $freunde = databaseController::getFriends($_SESSION["userID"]);
 ?>

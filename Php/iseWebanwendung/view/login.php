@@ -1,22 +1,29 @@
 <?php
 if(session_status()!=PHP_SESSION_ACTIVE) session_start();
 include "../controller/utility.php";
+include "../databaseFetcher/databaseController.php";
+
 if(utility::isLoggedIn()){ //if userID in session is set
-    header("Location: main.php");
-    exit();
+    if(databaseController::isBanned($_SESSION["userID"])) {
+        utility::logout();
+        header("Location:login.php?error=\"\"");
+        exit();
+    } else {
+        header("Location: main.php");
+    }
 }
+
 if(isset($_GET['inputEmail'])){
-    include"../databaseFetcher/databaseController.php";
     if(($userID = databaseController::loginUser($_GET['inputEmail'], $_GET['inputPassword']))!=null){
-      
         $_SESSION['userID'] = $userID;
         if(($adminID = databaseController::isAdmin($userID))!=null){
             $_SESSION['adminID'] = $adminID;
         }
         header("Location:main.php");
+        exit();
     } else {
-       
         header("Location:login.php?error=\"\"");
+        exit();
     }
 }
 ?>
@@ -70,11 +77,19 @@ if(isset($_GET['inputEmail'])){
             <br/>
             <?php
             if(isset($_GET['error'])){
-                echo "
-                    <div class=\"alert alert-danger\">
-                        <strong>Achtung!</strong> Fehlerhafte Eingabe. Bitte versuchen Sie es erneut!
-                    </div>
-                ";
+                if($_GET["error"] == 2){
+                    echo "
+                        <div class=\"alert alert-danger\">
+                            <strong>Achtung!</strong> Sie wurden gesperrt. Bitte wenden sie sich an einen Admin.
+                        </div>
+                    ";
+                } else {
+                    echo "
+                        <div class=\"alert alert-danger\">
+                            <strong>Achtung!</strong> Fehlerhafte Eingabe. Bitte versuchen Sie es erneut!
+                        </div>
+                    ";
+                }
             }
             ?>
         </div>

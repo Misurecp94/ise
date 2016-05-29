@@ -6,6 +6,11 @@ if(!utility::isLoggedIn()){ //if userID in session is NOT set
     header("Location: ../index.php");
     exit();
 }
+if(databaseController::isBanned($_SESSION["userID"])){
+    utility::logout();
+    header("Location: login.php?error=2");
+    exit();
+}
 
 if(isset($_GET["submitPersInfo"])){
     databaseController::changePersInfo($_SESSION["userID"], $_GET["nName"], $_GET["vName"], $_GET["age"], $_GET["groesse"], $_GET["gender"], $_GET["work"]);

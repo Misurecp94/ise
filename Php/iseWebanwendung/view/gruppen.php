@@ -6,6 +6,11 @@
         header("Location: ../index.php");
         exit();
     }
+    if(databaseController::isBanned($_SESSION["userID"])){
+        utility::logout();
+        header("Location: login.php?error=2");
+        exit();
+    }
 
     $groups = databaseController::getGroupList($_SESSION["userID"]);
 

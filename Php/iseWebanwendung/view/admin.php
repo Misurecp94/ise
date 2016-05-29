@@ -6,6 +6,11 @@ if(!utility::isLoggedIn()){ //if userID in session is NOT set
     header("Location: ../index.php");
     exit();
 }
+if(databaseController::isBanned($_SESSION["userID"])){
+    utility::logout();
+    header("Location: login.php?error=2");
+    exit();
+}
 if(!isset($_SESSION["adminID"])){
     header("Location: ../index.php");
     exit();
@@ -76,10 +81,7 @@ if(isset($_GET["blockUser"])){
             if(isset($_SESSION["adminID"])) {
                 ?>
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="adminErzeugen.php">Admin anlegen</a></li>
-                </ul>
-                <ul class="nav navbar-nav">
-                    <li><a href="userSperren.php">User sperren</a></li>
+                    <li class="active"><a href="admin.php">Admin</a></li>
                 </ul>
                 <?php
             }

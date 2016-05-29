@@ -677,7 +677,7 @@ class databaseController
         
         databaseController::createDatabaseConnection();
         
-        $sql = "SELECT benutzer.nutzerID FROM benutzer WHERE ". "benutzer.passwort='$password' AND benutzer.email='$email' AND benutzer.sperre<>'1' ";
+        $sql = "SELECT benutzer.nutzerID FROM benutzer WHERE ". "benutzer.passwort='$password' AND benutzer.email='$email'";
         global $con;
         $db_erg = mysqli_query( $con, $sql );
 
@@ -730,7 +730,6 @@ class databaseController
         databaseController::createDatabaseConnection();
         
 
-
         $sql = "UPDATE benutzer SET benutzer.sperre='1' WHERE benutzer.nutzerID='$otherID'";
         
          if(mysqli_query( $con, $sql )){
@@ -745,12 +744,7 @@ class databaseController
         
         
     }
-    
-    
-    
-    
-    
-    
+
     public static function changeInteresse($userID, $interests)
     {
         databaseController::createDatabaseConnection();

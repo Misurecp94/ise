@@ -1,12 +1,18 @@
 <?php
 if(session_status()!=PHP_SESSION_ACTIVE) session_start();
 include "../controller/utility.php";
+include "../databaseFetcher/databaseController.php";
 if(utility::isLoggedIn()){ //if userID in session is set
-    header("Location: main.php");
-    exit();
+    if(databaseController::isBanned($_SESSION["userID"])){
+        utility::logout();
+        header("Location: login.php?error=2");
+        exit();
+    } else {
+        header("Location: main.php");
+        exit();
+    }
 }
 if(isset($_GET['inputEmail'])){
-    include"../databaseFetcher/databaseController.php";
     if(($userID = databaseController::addUserToDatabase($_GET['inputEmail'], $_GET['inputPassword']))!=null){
         $_SESSION['userID'] = $userID;
         if(($adminID = databaseController::isAdmin($userID))!=null){

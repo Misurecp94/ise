@@ -6,6 +6,10 @@
         header("Location: ../index.php");
         exit();
     }
+    if(databaseController::isBanned($_SESSION["userID"])){
+        header("Location: login.php?error=2");
+        exit();
+    }
 
     if(isset($_GET["addGuest"]) && isset($_GET["event"])){
         
