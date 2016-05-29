@@ -265,6 +265,149 @@ class databaseController
              return false;
          }       
     }
+    
+    public static function getEventList($userID)
+    {
+        global $con;
+        databaseController::createDatabaseConnection();
+
+        
+        $sql = "SELECT veranstaltung.veranstaltungsID, veranstaltung.vTitel, veranstaltung.vBeschreibung, veranstaltung.vName, veranstaltung.vDatum FROM veranstaltung WHERE veranstaltung.nutzerID = '$userID'";
+        
+        
+        $db_erg = mysqli_query( $con, $sql );
+        $result=[];
+        while($row = mysqli_fetch_assoc($db_erg)){
+            $result[] = $row;
+        }
+        databaseController::closeDatabaseConnection();
+        return $result;
+    }
+    
+    public static function updateEventStatus($userID,$eventID,$status)
+    {
+        global $con;
+        databaseController::createDatabaseConnection();
+        
+        $sql = "UPDATE n_beantwortet_v SET status='$status' WHERE nutzerID='$userID' AND veranstaltungsID='$eventID'";
+        
+        if( mysqli_query( $con, $sql )){
+             databaseController::closeDatabaseConnection();
+            return true;
+        }else{
+             databaseController::closeDatabaseConnection();
+            return false;
+        }
+
+
+    }
+    
+    public static function getOpenEventList($userID)
+    {
+        global $con;
+        databaseController::createDatabaseConnection();
+        
+        $sql = "SELECT veranstaltung.veranstaltungsID, veranstaltung.vTitel, veranstaltung.vBeschreibung, veranstaltung.vName, veranstaltung.vDatum FROM veranstaltung,n_beantwortet_v WHERE n_beantwortet_v.status='Ausstehend' AND n_beantwortet_v.nutzerID='$userID' AND n_beantwortet_v.veranstaltungsID = veranstaltung.veranstaltungsID";
+        
+        $db_erg = mysqli_query( $con, $sql );
+        $result=[];
+        while($row = mysqli_fetch_assoc($db_erg)){
+            $result[] = $row;
+        }
+        databaseController::closeDatabaseConnection();
+        return $result;
+    }
+    
+    public static function getClosedEventList($userID)
+    {
+        global $con;
+        databaseController::createDatabaseConnection();
+        
+        $sql = "SELECT n_beantwortet_v.status,veranstaltung.veranstaltungsID, veranstaltung.vTitel, veranstaltung.vBeschreibung, veranstaltung.vName, veranstaltung.vDatum FROM veranstaltung,n_beantwortet_v WHERE n_beantwortet_v.status!='Ausstehend' AND n_beantwortet_v.nutzerID='$userID' AND n_beantwortet_v.veranstaltungsID = veranstaltung.veranstaltungsID";
+        
+        $db_erg = mysqli_query( $con, $sql );
+        $result=[];
+        while($row = mysqli_fetch_assoc($db_erg)){
+            $result[] = $row;
+        }
+        databaseController::closeDatabaseConnection();
+        return $result;
+    }
+    
+    
+    
+    public static function addGuest($email, $eventID){
+        global $con;
+        databaseController::createDatabaseConnection();
+        
+        $sql = "SELECT benutzer.nutzerID FROM benutzer WHERE benutzer.email ='$email'";
+       
+        $db_erg = mysqli_query( $con, $sql );
+        if($db_erg){
+            $row = mysqli_fetch_row($db_erg);
+            mysqli_free_result($db_erg); 
+
+            $sql = "INSERT INTO n_beantwortet_v (nutzerID,veranstaltungsID,status) VALUES ('$row[0]','$eventID','Ausstehend')";
+            
+            if(mysqli_query( $con, $sql )){
+                databaseController::closeDatabaseConnection();
+                return true;
+            }else{
+                databaseController::closeDatabaseConnection();
+                return false;
+            } 
+        }
+        databaseController::closeDatabaseConnection();
+        return false;     
+    }
+    
+    public static function getGuestList($eventID)
+    {
+        global $con;
+        databaseController::createDatabaseConnection();
+
+       $sql = "SELECT benutzer.vorname,benutzer.nachname,benutzer.email,n_beantwortet_v.status FROM benutzer,n_beantwortet_v WHERE n_beantwortet_v.veranstaltungsID='$eventID' AND  n_beantwortet_v.nutzerID= benutzer.nutzerID";
+        
+        $db_erg = mysqli_query( $con, $sql );
+        $result=[];
+        while($row = mysqli_fetch_assoc($db_erg)){
+            $result[] = $row;
+        }
+        databaseController::closeDatabaseConnection();
+        return $result;
+    }
+    
+    
+    
+    
+    
+    public static function createEvent($userID,$Name,$Datum,$Beschreibung,$Titel){
+        global $con;
+        
+        databaseController::createDatabaseConnection();
+        
+        $date = str_replace('.', '-', $Datum);
+        
+        
+        $sql = "INSERT INTO veranstaltung (vName,vDatum,vBeschreibung,vTitel,nutzerID) VALUES ('$Name','$date','$Beschreibung','$Titel','$userID')";
+        
+         if(mysqli_query( $con, $sql )){
+
+            databaseController::closeDatabaseConnection();
+            return true;
+         }else{
+
+             databaseController::closeDatabaseConnection();
+             return false;
+         } 
+        
+        
+        
+    }
+    
+    
+    
+    
 
     public static function getFriends($userID)
     {
