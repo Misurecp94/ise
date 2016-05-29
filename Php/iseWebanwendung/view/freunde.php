@@ -7,8 +7,7 @@ if(!utility::isLoggedIn()){ //if userID in session is NOT set
     exit();
 }
 
- $friends =databaseController::getFriendList($_SESSION["userID"]);
-
+$freunde = databaseController::getFriends($_SESSION["userID"]);
 ?>
 
 <!DOCTYPE html>
@@ -44,7 +43,7 @@ if(!utility::isLoggedIn()){ //if userID in session is NOT set
             <ul class="nav navbar-nav">
                 <li class="active"><a href="freunde.php">Freunde</a></li>
             </ul>
-            <form class="navbar-form navbar-left" method="get" action="nutzerSuche.php">
+             <form class="navbar-form navbar-left" method="get" action="nutzerSuche.php">
                 <div class="form-group">
                     <input type="text" id="search" name="search" class="form-control" placeholder="Name eingeben">
                 </div>
@@ -68,22 +67,32 @@ if(!utility::isLoggedIn()){ //if userID in session is NOT set
 <!-- Navbar end -->
 <!-- Body of the Page -->
 
-<!-- Freunde anzeigen, möglichkeit bieten diese in gruppen hinzuzufügen und unterhaltungen zu beginnen -->
+<!-- Freunde anzeigen, unterhaltungen beginnen -->
 
-                <div class="list-group">
-                    <?php
-                     for($i = 0; $i < count($friends); $i++) {
-                            echo "<li class=\"list-group-item\">";
-                                    echo "<h4>". $friends[$i]['vorname']. "   " . $friends[$i]['nachname'] . "</h4>";
-                            echo "</li>";
-                        }
-                    
-                    ?>
-                </div>
+<div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+        <?php
+        if(isset($freunde) && count($freunde)>0){
+            for($i = 0; $i < count($freunde); ++$i) {
+                echo "<div class=\"list-group \"><li class=\"list-group-item\"><h4>".$freunde[$i]['vorname']." ".$freunde[$i]['nachname']."</h4>".$freunde[$i]['email'];
 
+                if(databaseController::convStarted($_SESSION["userID"],$freunde[$i]['nutzerID'])==0){
 
+                    echo "<form  action=\"unterhaltung.php\" method=\"get\"><button type=\"submit\" class=\"btn btn-default btn-xs pull-right\" name=\"startConv\" id=\"startConv\"> 
+                            Unterhaltung starten</button>
+                            <input type=\"hidden\" id=\"otherID\" name=\"otherID\" class=\"form-control\" value=".$freunde[$i]['nutzerID']."></form>";
+                }
+                echo "</li></div>";
+            }
 
-
+        }else{
+            echo "Keine User gefunden";
+        }
+        ?>
+    </div>
+    <div class="col-md-4"></div>
+</div>
 
 
 <!-- End Body of the Page -->

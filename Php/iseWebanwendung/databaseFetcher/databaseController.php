@@ -21,7 +21,7 @@ class databaseController
         global $con;
         mysqli_close($con);
     }
-    
+
     public static function addFriend($userID,$otherID){
         global $con;
         databaseController::createDatabaseConnection();
@@ -30,6 +30,47 @@ class databaseController
         $sql = "INSERT INTO istbefreundet(nutzerID1, nutzerID2) VALUES ('$userID', '$otherID')";
 
         if(mysqli_query($con,$sql)){
+            $sql = "INSERT INTO istbefreundet(nutzerID1, nutzerID2) VALUES ('$otherID', '$userID')";
+            if(mysqli_query($con, $sql)){
+                mysqli_commit($con);
+                databaseController::closeDatabaseConnection();
+                return true;
+            } else {
+                mysqli_rollback($con);
+                databaseController::closeDatabaseConnection();
+                return false;
+            }
+        } else {
+            mysqli_rollback($con);
+            databaseController::closeDatabaseConnection();
+            return false;
+        }
+    }
+
+    public static function sendMessage($userID, $unterhaltungsID, $message)
+    {
+        if(empty($message)){
+            return;
+        }
+        global $con;
+        databaseController::createDatabaseConnection();
+        mysqli_autocommit($con,false);
+
+        $sql = "SELECT benutzer.nutzerID FROM benutzer, fuehren
+                WHERE fuehren.unterhaltungsID = '$unterhaltungsID'
+                AND fuehren.nutzerID1 = $userID AND fuehren.nutzerID2 = benutzer.nutzerID";
+
+
+        $db_erg = mysqli_query($con, $sql);
+        $result = [];
+        while($row = mysqli_fetch_assoc($db_erg)){
+            $result[] = $row;
+        }
+        mysqli_free_result($db_erg);
+
+        $sql="INSERT INTO nachricht(nInhalt, erstellerID, empfaengerID, unterhaltungsID ) VALUES('$message', '$userID',". $result[0]['nutzerID'].",'$unterhaltungsID')";
+
+        if(mysqli_query($con, $sql)){
             mysqli_commit($con);
             databaseController::closeDatabaseConnection();
             return true;
@@ -38,24 +79,44 @@ class databaseController
             databaseController::closeDatabaseConnection();
             return false;
         }
+
+        databaseController::closeDatabaseConnection();
+        return;
     }
-    
-     public static function getFriendList($userID){
-                global $con;
-        
+
+    public static function addUnterhaltung($userID, $otherID)
+    {
+        global $con;
         databaseController::createDatabaseConnection();
-        
-        $sql = "SELECT benutzer.vorname,benutzer.nachname FROM benutzer,istbefreundet WHERE istbefreundet.nutzerID1='$userID' AND istbefreundet.nutzerID2=benutzer.nutzerID";
-       
-        $db_erg = mysqli_query( $con, $sql );
-        
-        $result=[];
-        while($row = mysqli_fetch_assoc($db_erg)){
-            $result[] = $row;
+        mysqli_autocommit($con,false);
+
+        $sql = "INSERT INTO unterhaltung () VALUES ()";
+
+        if(mysqli_query($con,$sql)){
+            $lastID = mysqli_insert_id($con);
+            $sql = "INSERT INTO fuehren(unterhaltungsID, nutzerID1, nutzerID2) VALUES ('$lastID', '$userID', '$otherID')";
+            if(mysqli_query($con, $sql)){
+                $sql = "INSERT INTO fuehren(unterhaltungsID, nutzerID1, nutzerID2) VALUES('lastID','$otherID', '$userID')";
+                if(mysqli_query($con, $sql)){
+                    mysqli_commit($con);
+                    databaseController::closeDatabaseConnection();
+                    return true;
+                } else {
+                    mysqli_rollback($con);
+                    databaseController::closeDatabaseConnection();
+                    return false;
+                }
+            } else {
+                mysqli_rollback($con);
+                databaseController::closeDatabaseConnection();
+                return false;
+            }
+        } else {
+            mysqli_rollback($con);
+            databaseController::closeDatabaseConnection();
+            return false;
         }
-        return $result;
     }
-    
     
     public static function isFriend($userID, $otherID){
         global $con;
@@ -73,14 +134,31 @@ class databaseController
         return $row[0];
         
     }
-    
-    
-    public static function searchUser($search){
+
+    public static function convStarted($userID, $otherID)
+    {
+        global $con;
+
+        databaseController::createDatabaseConnection();
+
+        $sql = "SELECT COUNT(*) AS total FROM fuehren WHERE nutzerID1='$userID' AND nutzerID2='$otherID'";
+
+        $db_erg = mysqli_query( $con, $sql );
+
+        $row = mysqli_fetch_row($db_erg);
+        mysqli_free_result($db_erg);
+
+        databaseController::closeDatabaseConnection();
+        return $row[0];
+    }
+
+    public static function searchUser($search, $userID){
         global $con;
         
         databaseController::createDatabaseConnection();
         
-        $sql = "SELECT nutzerID,vorname,nachname,email FROM benutzer WHERE (benutzer.vorname LIKE '%$search%' OR benutzer.nachname LIKE '%$search%' OR benutzer.email LIKE '%$search%')";
+        $sql = "SELECT nutzerID,vorname,nachname,email FROM benutzer WHERE (benutzer.vorname LIKE '%$search%' OR benutzer.nachname LIKE '%$search%' 
+                    OR benutzer.email LIKE '%$search%') AND benutzer.nutzerID != '$userID'";
        
         $db_erg = mysqli_query( $con, $sql );
         
@@ -187,7 +265,60 @@ class databaseController
              return false;
          }       
     }
-    
+
+    public static function getFriends($userID)
+    {
+        global $con;
+        databaseController::createDatabaseConnection();
+        $sql = "SELECT benutzer.vorname, benutzer.nachname, benutzer.email, benutzer.nutzerID
+                FROM benutzer, istbefreundet
+                WHERE istbefreundet.nutzerID1 = '$userID' AND istbefreundet.nutzerID2 = benutzer.nutzerID";
+
+        $db_erg = mysqli_query($con, $sql);
+        $result = [];
+        while($row = mysqli_fetch_assoc($db_erg)){
+            $result[] = $row;
+        }
+        databaseController::closeDatabaseConnection();
+        return $result;
+    }
+
+    public static function getUnterhaltungen($userID)
+    {
+        global $con;
+        databaseController::createDatabaseConnection();
+
+        $sql = "SELECT benutzer.vorname, benutzer.nachname, benutzer.nutzerID , fuehren.unterhaltungsID FROM fuehren, benutzer 
+                WHERE fuehren.nutzerID1='$userID'
+                AND fuehren.nutzerID2 = benutzer.nutzerID";
+        $db_erg = mysqli_query( $con, $sql );
+        $result=[];
+        while($row = mysqli_fetch_assoc($db_erg)){
+            $result[] = $row;
+        }
+        databaseController::closeDatabaseConnection();
+        return $result;
+    }
+
+    public static function getNachrichten($userID, $unterhaltung)
+    {
+        global $con;
+        databaseController::createDatabaseConnection();
+
+        $sql = "SELECT nachricht.nInhalt, nachricht.nachrichtenID, nachricht.erstellzeitpunkt, benutzer.vorname, benutzer.nachname, nachricht.nachrichtenID, nachricht.empfaengerID FROM nachricht, benutzer
+                WHERE (nachricht.unterhaltungsID = '$unterhaltung'  AND nachricht.empfaengerID = '$userID' AND nachricht.erstellerID = benutzer.nutzerID) OR 
+                (nachricht.unterhaltungsID = '$unterhaltung' AND nachricht.erstellerID = '$userID' AND benutzer.nutzerID = '$userID')
+                ORDER BY nachricht.nachrichtenID";
+
+        $db_erg = mysqli_query( $con, $sql );
+        $result=[];
+        while($row = mysqli_fetch_assoc($db_erg)){
+            $result[] = $row;
+        }
+        databaseController::closeDatabaseConnection();
+        return $result;
+    }
+
     public static function getBeitraege($gruppe){
         
        global $con;
@@ -218,6 +349,7 @@ class databaseController
         while($row = mysqli_fetch_assoc($db_erg)){
             $result[] = $row;
         }
+        mysqli_free_result($db_erg);
         databaseController::closeDatabaseConnection();
         return $result;
     }
@@ -235,6 +367,7 @@ class databaseController
         while($row = mysqli_fetch_assoc($db_erg)){
             $result[] = $row;
         }
+        mysqli_free_result($db_erg);
         databaseController::closeDatabaseConnection();
         return $result;
     }

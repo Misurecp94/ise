@@ -1,10 +1,23 @@
 <?php
 if(session_status()!=PHP_SESSION_ACTIVE) session_start();
 include "../controller/utility.php";
+include "../databaseFetcher/databaseController.php";
 if(!utility::isLoggedIn()){ //if userID in session is NOT set
     header("Location: ../index.php");
     exit();
 }
+if(isset($_POST['insertMessage'])){
+    if(databaseController::sendMessage($_SESSION["userID"], $_GET["unterhaltung"], $_POST["insertMessage"]));
+}
+
+if(isset($_GET['otherID'])){
+    databaseController::addUnterhaltung($_SESSION["userID"], $_GET["otherID"]);
+}
+if(isset($_GET['unterhaltung'])){
+    $nachrichten = databaseController::getNachrichten($_SESSION["userID"], $_GET["unterhaltung"]);
+}
+
+$unterhaltungen = databaseController::getUnterhaltungen($_SESSION["userID"]);
 ?>
 
 <!DOCTYPE html>
@@ -66,14 +79,69 @@ if(!utility::isLoggedIn()){ //if userID in session is NOT set
 <!-- Body of the Page -->
 
 <!-- Unterhaltungen anzeigen ... Nachrichten versenden -->
-
-
-
-
-
-
-
-
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <?php
+            if(isset($nachrichten)){
+            ?>
+                <form class="form" action="unterhaltung.php?unterhaltung=<?php echo $_GET['unterhaltung'] ?>" method="post">
+                    <div class="form-group row">
+                        <div class="col-sm-6">
+                            <textarea class="form-control" rows="3" placeholder="Nachricht eingeben..." name="insertMessage" id="insertMessage" style="resize: none;"></textarea>
+                        </div>
+                        <div class="col-sm-2" align="left">
+                            <button type="submit" class="btn btn-default">Senden</button>
+                        </div>
+                        <div class="col-sm-2" align="center">
+                            <a href="unterhaltung.php?unterhaltung=<?php echo $_GET['unterhaltung'] ?>" class="btn btn-default">Reload</a>
+                        </div>
+                        <div class="col-sm-2" align="right">
+                            <a href="unterhaltung.php" class="btn btn-default">Schliessen</a>
+                        </div>
+                    </div>
+                </form>
+                <hr>
+                <?php
+                    if(count($nachrichten)>0){
+                        for($i = count($nachrichten)-1; $i >= 0; --$i) {
+                            if($nachrichten[$i]['empfaengerID'] == $_SESSION["userID"]){
+                                echo "<div class=\"list-group \" align='right'><li class=\"list-group-item\"><h4>" . $nachrichten[$i]['nInhalt'] . "</h4><br>";
+                                echo "<form><button class=\"btn btn-default btn-xs pull-right disabled\">"
+                                    .$nachrichten[$i]['vorname']. " " . $nachrichten[$i]['nachname'] . " am " . $nachrichten[$i]['erstellzeitpunkt']
+                                    ."</button></form>";
+                            } else {
+                                echo "<div class=\"list-group \" align='left'><li class=\"list-group-item\"><h4>" . $nachrichten[$i]['nInhalt'] . "</h4><br>";
+                                echo "<form><button class=\"btn btn-default btn-xs pull-left disabled\">"
+                                    .$nachrichten[$i]['vorname']. " " . $nachrichten[$i]['nachname'] . " am " . $nachrichten[$i]['erstellzeitpunkt']
+                                    ."</button></form>";
+                            }
+                            echo "</li></div>";
+                        }
+                    } else {
+                        echo "<h3>Starte den Chat! Tippe eine Nachricht ein!</h3>";
+                    }
+                } else {
+                    echo "<h3>Bitte waehlen Sie einen Chat!</h3>";
+                }
+                echo "<hr>";
+                ?>
+        </div>
+        <div class="col-md-4">
+            <h3>Chatten Sie mit: </h3>
+            <br>
+            <hr>
+            <div class="list-group">
+                <?php
+                for($i = 0; $i < count($unterhaltungen); ++$i) {
+                    echo "<a href=\"?unterhaltung=".$unterhaltungen[$i]['unterhaltungsID']."\" class=\"list-group-item\"><h4>".$unterhaltungen[$i]['vorname']." " .$unterhaltungen[$i]['nachname']
+                        ."</h4> </a>";
+                }
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- End Body of the Page -->
 </body>
 

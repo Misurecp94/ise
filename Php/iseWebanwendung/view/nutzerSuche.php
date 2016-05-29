@@ -9,7 +9,7 @@ if(!utility::isLoggedIn()){ //if userID in session is NOT set
 
 
  if(isset($_GET["search"])){
-    $user =databaseController::searchUser($_GET["search"]);
+    $user =databaseController::searchUser($_GET["search"], $_SESSION["userID"]);
  }
 
 
@@ -78,8 +78,10 @@ if(!utility::isLoggedIn()){ //if userID in session is NOT set
 <!-- Body of the Page -->
 
 <!-- gefundene Nutzer anzeigen, Möglichkeit bieten freundschaften hinzuzufügen --> 
-                  
 
+<div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
     <?php
         if(isset($user) && count($user)>0){
             for($i = 0; $i < count($user); ++$i) {
@@ -87,7 +89,9 @@ if(!utility::isLoggedIn()){ //if userID in session is NOT set
                 
                 if(databaseController::isFriend($_SESSION["userID"],$user[$i]['nutzerID'])==0){
                     
-                    echo "<form  action=\"\" method=\"get\"><button type=\"submit\" class=\"btn btn-default btn-xs pull-right\" name=\"addfriend\" id=\"addfriend\"> Freund hinzuf&uuml;gen</button><input type=\"hidden\" id=\"search\" name=\"search\" class=\"form-control\" value=".$_GET['search']."><input type=\"hidden\" id=\"otherid\" name=\"otherid\" class=\"form-control\" value=".$user[$i]['nutzerID']."></form>";
+                    echo "<form  action=\"\" method=\"get\"><button type=\"submit\" class=\"btn btn-default btn-xs pull-right\" name=\"addfriend\" id=\"addfriend\"> 
+                            Freund hinzufuegen</button><input type=\"hidden\" id=\"search\" name=\"search\" class=\"form-control\" value=".$_GET['search'].">
+                            <input type=\"hidden\" id=\"otherid\" name=\"otherid\" class=\"form-control\" value=".$user[$i]['nutzerID']."></form>";
                 }
                    echo "</li></div>";
             }
@@ -96,7 +100,9 @@ if(!utility::isLoggedIn()){ //if userID in session is NOT set
             echo "Keine User gefunden";
         }
     ?>
-
+    </div>
+    <div class="col-md-4"></div>
+</div>
 
 
 
