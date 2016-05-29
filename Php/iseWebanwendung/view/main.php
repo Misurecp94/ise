@@ -99,16 +99,14 @@ $pic = databaseController::getPic($_SESSION["userID"]);
             <ul class="nav navbar-nav">
                 <li><a href="veranstaltung.php">Veranstaltungen</a></li>
             </ul>
-            <?php
+                 <?php
             if(isset($_SESSION["adminID"])) {
-            ?>
+                ?>
                 <ul class="nav navbar-nav">
-                    <li><a href="adminErzeugen.php">Admin anlegen</a></li>
+                    <li><a href="admin.php">Admin</a></li>
                 </ul>
-                <ul class="nav navbar-nav">
-                    <li><a href="userSperren.php">User sperren</a></li>
-                </ul>
-            <?php
+  
+                <?php
             }
             ?>
             <ul class="nav navbar-nav navbar-right">

@@ -72,14 +72,13 @@ if(!utility::isLoggedIn()){ //if userID in session is NOT set
             if(isset($_SESSION["adminID"])) {
                 ?>
                 <ul class="nav navbar-nav">
-                    <li><a href="adminErzeugen.php">Admin anlegen</a></li>
+                    <li><a href="admin.php">Admin</a></li>
                 </ul>
-                <ul class="nav navbar-nav">
-                    <li><a href="userSperren.php">User sperren</a></li>
-                </ul>
+  
                 <?php
             }
             ?>
+            
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="../controller/logout.php">Logout</a></li>
             </ul>
