@@ -334,8 +334,6 @@ class databaseController
         return $result;
     }
     
-    
-    
     public static function addGuest($email, $eventID){
         global $con;
         databaseController::createDatabaseConnection();
@@ -377,10 +375,6 @@ class databaseController
         return $result;
     }
     
-    
-    
-    
-    
     public static function createEvent($userID,$Name,$Datum,$Beschreibung,$Titel){
         global $con;
         
@@ -405,10 +399,6 @@ class databaseController
         
     }
     
-    
-    
-    
-
     public static function getFriends($userID)
     {
         global $con;
