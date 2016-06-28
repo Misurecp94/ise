@@ -1,0 +1,13 @@
+nutzerID;veranstaltungsID;status
+1;1;Teilnahme
+2;1;Absage
+3;1;Teilnahme
+2;4;Absage
+3;2;Teilnahme
+3;3;Absage
+3;4;Teilnahme
+1;2;Absage
+2;2;Teilnahme
+1;4;Absage
+2;5;Teilnahme
+1;5;Absage
